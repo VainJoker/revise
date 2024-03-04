@@ -43,6 +43,7 @@ emoji = [
 
 scopes = [
     "revise",
+    "config",
     "test",
     "docs"
 ]
