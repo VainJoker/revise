@@ -1,43 +1,44 @@
-[messages]
-type= "Select the type of change that you\"re committing="
-scope= "Denote the SCOPE of this change (optional)="
-customScope= "Denote the SCOPE of this change="
-subject= "Write a SHORT, IMPERATIVE tense description of the change=\n"
-body= "Provide a LONGER description of the change (optional). Use '|' to break new line=\n"
-breaking= "List any BREAKING CHANGES (optional). Use '|' to break new line=\n"
-footerPrefixesSelect= "Select the ISSUES type of changeList by this change (optional)="
-customFooterPrefix= "Input ISSUES prefix="
-footer= "List any ISSUES by this change. E.g.= #31, #34=\n"
-generatingByAI= "Generating your AI commit subject..."
-generatedSelectByAI= "Select suitable subject by AI generated="
-confirmCommit= "Are you sure you want to proceed with the commit above?"
+messages = [
+    { key = "type", value = "Select the type of change that you\"re committing=" },
+    { key = "scope", value = "Denote the SCOPE of this change (optional)=" },
+    { key = "customScope", value = "Denote the SCOPE of this change=" },
+    { key = "subject", value = "Write a SHORT, IMPERATIVE tense description of the change=\n" },
+    { key = "body", value = "Provide a LONGER description of the change (optional). Use '|' to break new line=\n"},
+    { key = "breaking", value = "List any BREAKING CHANGES (optional). Use '|' to break new line=\n"},
+    { key = "footerPrefixesSelect", value = "Select the ISSUES type of changeList by this change (optional)=" },
+    { key = "customFooterPrefix", value = "Input ISSUES prefix=" },
+    { key = "footer", value = "List any ISSUES by this change. E.g.= #31, #34=\n"},
+    { key = "generatingByAI", value = "Generating your AI commit subject..." },
+    { key = "generatedSelectByAI", value = "Select suitable subject by AI generated=" },
+    { key = "confirmCommit", value = "Are you sure you want to proceed with the commit above?" }
+]
 
 types = [
-    { value= "feat     ", name= "A new feature"},
-    { value= "fix      ", name= "A bug fix"},
-    { value= "docs     ", name= "Documentation only changes"},
-    { value= "style    ", name= "Changes that do not affect the meaning of the code"},
-    { value= "refactor ", name= "A code change that neither fixes a bug nor adds a feature"},
-    { value= "perf     ", name= "A code change that improves performance"},
-    { value= "test     ", name= "Adding missing tests or correcting existing tests"},
-    { value= "build    ", name= "Changes that affect the build system or external dependencies"},
-    { value= "ci       ", name= "Changes to our CI configuration files and scripts"},
-    { value= "chore    ", name= "Other changes that don\"t modify src or test files"},
-    { value= "revert   ", name= "Reverts a previous commit"}
+    { key= "feat     ", value= "A new feature"},
+    { key= "fix      ", value= "A bug fix"},
+    { key= "docs     ", value= "Documentation only changes"},
+    { key= "style    ", value= "Changes that do not affect the meaning of the code"},
+    { key= "refactor ", value= "A code change that neither fixes a bug nor adds a feature"},
+    { key= "perf     ", value= "A code change that improves performance"},
+    { key= "test     ", value= "Adding missing tests or correcting existing tests"},
+    { key= "build    ", value= "Changes that affect the build system or external dependencies"},
+    { key= "ci       ", value= "Changes to our CI configuration files and scripts"},
+    { key= "chore    ", value= "Other changes that don\"t modify src or test files"},
+    { key= "revert   ", value= "Reverts a previous commit"}
 ]
 
 emoji = [
-    { value= "feat", icon="✨"},
-    { value= "fix", icon="🐛"},
-    { value= "docs", icon="📚"},
-    { value= "style", icon="🎨"},
-    { value= "refactor", icon="♻️"},
-    { value= "perf", icon="⚡️"},
-    { value= "test", icon="✅"},
-    { value= "build", icon="📦️"},
-    { value= "ci", icon="⚙️"},
-    { value= "chore", icon="🔨"},
-    { value= "revert", icon="◀️"}
+    { key= "feat", value="✨"},
+    { key= "fix", value="🐛"},
+    { key= "docs", value="📚"},
+    { key= "style", value="🎨"},
+    { key= "refactor", value="♻️"},
+    { key= "perf", value="⚡️"},
+    { key= "test", value="✅"},
+    { key= "build", value="📦️"},
+    { key= "ci", value="⚙️"},
+    { key= "chore", value="🔨"},
+    { key= "revert", value="◀️"}
 ]
 
 scopes = [
@@ -46,5 +47,5 @@ scopes = [
     "docs"
 ]
 
-useEmoji= true
+# left right center hidden
 emojiAlign= "center"
