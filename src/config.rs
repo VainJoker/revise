@@ -7,6 +7,8 @@ use crate::error::ReviseResult;
 #[derive(Deserialize, Debug)]
 pub struct Config {
     pub messages: Vec<Message>,
+    #[serde(rename = "types")]
+    pub types: Vec<CommitType>,
     #[serde(rename = "emoji")]
     pub emojis: Vec<Emoji>,
     #[serde(rename = "emojiAlign")]
@@ -21,28 +23,49 @@ pub struct Message {
 }
 
 #[derive(Deserialize, Debug, Clone)]
+pub struct CommitType {
+    pub key: String,
+    pub value: String,
+}
+
+#[derive(Deserialize, Debug, Clone)]
 pub struct Emoji {
     pub key: String,
     pub value: String,
 }
 
-pub fn toml_parser(path: &Path) -> ReviseResult<Config> {
-    Ok(toml::from_str(&std::fs::read_to_string(path)?)?)
+impl Config {
+    pub fn load_config() -> ReviseResult<Config> {
+        let mut current_path = env::current_dir()?;
+        current_path.push("revise.toml");
+        if let Ok(true) = current_path.try_exists() {
+            return toml_parser(&current_path);
+        } else if let Some(mut config_path) = dirs::config_local_dir() {
+            config_path.push("revise");
+            config_path.push("revise.toml");
+            if let Ok(true) = config_path.try_exists() {
+                return toml_parser(&current_path);
+            }
+        }
+        Ok(Config::default())
+    }
+
+    pub fn get_messages(&self) -> Vec<String> {
+        todo!()
+    }
+
+    pub fn get_emoji(&self) -> Vec<String> {
+        todo!()
+    }
+
+    pub fn get_types(&self) -> Vec<String> {
+        let types = self.types.clone();
+        types.into_iter().map(|t| t.key + ":" + &t.value).collect()
+    }
 }
 
-pub fn load_config() -> ReviseResult<Config> {
-    let mut current_path = env::current_dir()?;
-    current_path.push("revise.toml");
-    if let Ok(true) = current_path.try_exists() {
-        return toml_parser(&current_path);
-    } else if let Some(mut config_path) = dirs::config_local_dir() {
-        config_path.push("revise");
-        config_path.push("revise.toml");
-        if let Ok(true) = config_path.try_exists() {
-            return toml_parser(&current_path);
-        }
-    }
-    Ok(Config::default())
+pub fn toml_parser(path: &Path) -> ReviseResult<Config> {
+    Ok(toml::from_str(&std::fs::read_to_string(path)?)?)
 }
 
 #[test]
@@ -103,6 +126,19 @@ impl Default for Config {
                     key: "confirmCommit".to_owned(),
                     value: "Are you sure you want to proceed with the commit above?".to_owned(),
                 },
+                ].to_vec(),
+                types: [
+                    CommitType { key: "feat:     ".to_owned(),value: "A new feature".to_owned() },
+                    CommitType { key: "fix:      ".to_owned(), value: "A bug fix".to_owned()},
+                    CommitType { key: "docs:     ".to_owned(), value: "Documentation only changes".to_owned()},
+                    CommitType { key: "style:    ".to_owned(), value: "Changes that do not affect the meaning of the code".to_owned()},
+                    CommitType { key: "refactor: ".to_owned(), value: "A code change that neither fixes a bug nor adds a feature".to_owned()},
+                    CommitType { key: "perf:     ".to_owned(), value: "A code change that improves performance".to_owned()},
+                    CommitType { key: "test:     ".to_owned(), value: "Adding missing tests or correcting existing tests".to_owned()},
+                    CommitType { key: "build:    ".to_owned(), value: "Changes that affect the build system or external dependencies".to_owned()},
+                    CommitType { key: "ci:       ".to_owned(), value: "Changes to our CI configuration files and scripts".to_owned()},
+                    CommitType { key: "chore:    ".to_owned(), value: "Other changes that don\"t modify src or test files".to_owned()},
+                    CommitType { key: "revert:   ".to_owned(), value: "Reverts a previous commit".to_owned()}
                 ].to_vec(),
                 emojis: [
                     Emoji {
