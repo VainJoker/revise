@@ -1,3 +1,4 @@
+
 # configuration for https://rust-lang.github.io/rustfmt/
 version = "Two"
 newline_style = "unix"

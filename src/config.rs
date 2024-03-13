@@ -4,7 +4,7 @@ use serde::Deserialize;
 
 use crate::error::ReviseResult;
 
-#[derive(Deserialize, Debug)]
+#[derive(Deserialize, Debug,Clone)]
 pub struct Config {
     pub messages: Vec<Message>,
     pub types: Vec<Type>,

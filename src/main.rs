@@ -1,16 +1,24 @@
-use inquire::{InquireError, Select};
+use inquire::InquireError;
+use revise::commit::Commit;
 use revise::config::Config;
 
 fn main() {
     let config = Config::load_config().expect("load config error");
-    let message_options = config.messages.clone();
-
-    for msg in message_options {
-        let types_options = config.get_types().clone();
-        let ans: Result<String, InquireError> = Select::new(&msg.value, types_options).prompt();
-        match ans {
-            Ok(choice) => println!("{}! That's mine too!", choice),
-            Err(_) => println!("There was an error, please try again"),
+    let mut commit = Commit::default();
+    let result = commit.commit(&config);
+    match result {
+        Err(err) => {
+            if let Some(specific_err) = err.downcast_ref::<InquireError>() {
+                match specific_err {
+                    InquireError::OperationCanceled | InquireError::OperationInterrupted => {
+                        // Handle OperationCanceled or OperationInterrupted error.
+                    }
+                    _ => {
+                        
+                    }
+                }
+            }
         }
+        Ok(_) => { /* Handle Ok result */ }
     }
 }
