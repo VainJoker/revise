@@ -43,12 +43,12 @@ impl ReviseCommit {
     pub fn inquire_commit_type(&mut self, config: &ReviseConfig) -> ReviseResult<()> {
         let msg = "Select the type of change that you're committing:";
         let type_options: Vec<String> = config.get_types();
-        let ans = Select::new(msg, type_options).prompt()?;
-        self.commit_type = ans
-            .split(':')
-            .next()
-            .expect("types config error")
-            .to_string();
+        let ans = Select::new(msg, type_options.clone()).prompt()?;
+        let idx = type_options
+            .iter()
+            .position(|s| *s == ans)
+            .ok_or(anyhow::anyhow!("Select committing type"))?;
+        self.commit_type = config.get_type_key(idx).unwrap();
         Ok(())
     }
 
@@ -119,4 +119,15 @@ impl ReviseCommit {
             .prompt()
             .expect("Error Occurs when select commit subject");
     }
+}
+
+#[test]
+fn test_search_type() {
+    let config = ReviseConfig::load_config().unwrap();
+    let type_options: Vec<String> = config.get_types();
+    let idx = type_options
+        .iter()
+        .position(|s| s == "feat:     A new feature")
+        .unwrap();
+    assert_eq!(0, idx)
 }

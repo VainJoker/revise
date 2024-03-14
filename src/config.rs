@@ -35,7 +35,6 @@ impl Type {
 impl ReviseConfig {
     pub fn new() -> Self {
         Self {
-            // messages: Vec::new(),
             types: Vec::new(),
             emojis: Vec::new(),
             emoji_align: String::new(),
@@ -44,7 +43,23 @@ impl ReviseConfig {
     }
     pub fn get_types(&self) -> Vec<String> {
         let types = self.types.clone();
-        types.into_iter().map(|t| t.key + &t.value).collect()
+        let max_key_len = types.iter().map(|t| t.key.len()).max().unwrap();
+
+        types
+            .into_iter()
+            .map(|t| {
+                let padding = " ".repeat(max_key_len - t.key.len() + 2);
+                format!("{}:{}{}", t.key, padding, t.value)
+            })
+            .collect()
+    }
+
+    pub fn get_type_key(&self, idx: usize) -> Option<String> {
+        let types = self.types.clone();
+        if let Some(t) = types.get(idx) {
+            return Some(t.key.clone());
+        }
+        None
     }
 
     pub fn get_scopes(&self) -> Vec<String> {
