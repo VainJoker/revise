@@ -49,4 +49,4 @@ scopes = [
 ]
 
 # left right center hidden
-emojiAlign= "center"
+emojiAlign= "hidden"

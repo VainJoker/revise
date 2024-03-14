@@ -1,9 +1,9 @@
 use inquire::{Editor, Select, Text};
 
-use crate::config::Config;
-use crate::error::ReviseResult;
+use crate::{config::ReviseConfig, error::ReviseResult};
 
-pub struct Commit {
+#[derive(Debug)]
+pub struct ReviseCommit {
     pub commit_type: String,
     pub commit_scope: Option<String>,
     pub commit_custom_scope: Option<String>,
@@ -16,9 +16,9 @@ pub struct Commit {
     pub commit_confirm_commit: String,
 }
 
-impl Default for Commit {
+impl Default for ReviseCommit {
     fn default() -> Self {
-        Self{
+        Self {
             commit_type: "".to_string(),
             commit_scope: None,
             commit_custom_scope: None,
@@ -28,23 +28,22 @@ impl Default for Commit {
             commit_footer_prefixes_select: None,
             commit_custom_footer_prefix: None,
             commit_footer: None,
-            commit_confirm_commit: "".to_string()
+            commit_confirm_commit: "".to_string(),
         }
     }
 }
 
-impl Commit {
-    pub fn commit(&mut self,config: &Config) -> ReviseResult<()> {
+impl ReviseCommit {
+    pub fn commit(&mut self, config: &ReviseConfig) -> ReviseResult<&Self> {
         self.inquire_commit_type(config)?;
         self.inquire_commit_scope(config)?;
-        Ok(())
+        Ok(self)
     }
 
-    pub fn inquire_commit_type(&mut self, config: &Config) -> ReviseResult<()>{
+    pub fn inquire_commit_type(&mut self, config: &ReviseConfig) -> ReviseResult<()> {
         let msg = "Select the type of change that you're committing:";
         let type_options: Vec<String> = config.get_types();
-        let ans = Select::new(msg, type_options)
-            .prompt()?;
+        let ans = Select::new(msg, type_options).prompt()?;
         self.commit_type = ans
             .split(':')
             .next()
@@ -53,15 +52,14 @@ impl Commit {
         Ok(())
     }
 
-    pub fn inquire_commit_scope(&mut self, config: &Config) -> ReviseResult<()>{
+    pub fn inquire_commit_scope(&mut self, config: &ReviseConfig) -> ReviseResult<()> {
         let msg = "Denote the SCOPE of this change (optional):";
         let mut scope_options: Vec<String> = config.get_scopes();
         if scope_options.is_empty() {
             scope_options.push("empty".to_string());
             scope_options.push("custom".to_string());
         }
-        let ans = Select::new(msg, scope_options)
-            .prompt()?;
+        let ans = Select::new(msg, scope_options).prompt()?;
         self.commit_scope = Some(ans);
         Ok(())
     }
@@ -121,5 +119,4 @@ impl Commit {
             .prompt()
             .expect("Error Occurs when select commit subject");
     }
-
 }
