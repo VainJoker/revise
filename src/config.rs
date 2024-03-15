@@ -44,7 +44,7 @@ impl ReviseConfig {
 
     pub fn get_types(&self) -> Vec<String> {
         let types = self.types.clone();
-        let max_key_len = types.iter().map(|t| t.key.len()).max().unwrap();
+        let max_key_len = types.iter().map(|t| t.key.len()).max().unwrap_or(5);
 
         types
             .into_iter()

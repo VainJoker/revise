@@ -1,5 +1,6 @@
-use anyhow::anyhow;
-use inquire::{Editor, Select, Text};
+use anyhow::{anyhow, Context};
+use inquire::{CustomUserError, Editor, required, Select, Text};
+use inquire::validator::{ErrorMessage, Validation};
 
 use crate::{config::ReviseConfig, error::ReviseResult};
 
@@ -36,7 +37,7 @@ impl ReviseCommit {
             .iter()
             .position(|s| *s == ans)
             .ok_or(anyhow!("Error Occurs when select committing type"))?;
-        self.commit_type = config.get_type_key(idx).unwrap();
+        self.commit_type = config.get_type_key(idx).ok_or(anyhow!("Error Occurs when select committing type"))?;
         Ok(())
     }
 
@@ -46,8 +47,8 @@ impl ReviseCommit {
         scope_options.push("empty".to_string());
         scope_options.push("custom".to_string());
         let ans = Select::new(msg, scope_options)
-            .prompt()
-            .map_err(|e| anyhow!("Error Occurs when select committing scope: {}", e))?;
+            .prompt()?;
+            // .expect("Error Occurs when select committing scope");
         self.commit_scope = ans;
         Ok(())
     }
@@ -59,8 +60,9 @@ impl ReviseCommit {
         }
         let msg = "Denote the SCOPE of this change:";
         let ans = Text::new(msg)
-            .prompt()
-            .map_err(|e| anyhow!("Error Occurs when select committing custom scope: {}", e))?;
+            .with_validator(Self::str_empty_validator())
+            .prompt()?;
+            // .expect("Error Occurs when select committing custom scope");
         self.commit_custom_scope = Some(ans);
         Ok(())
     }
@@ -68,17 +70,28 @@ impl ReviseCommit {
     pub fn inquire_commit_subject(&mut self) -> ReviseResult<()> {
         let msg = "Write a SHORT, IMPERATIVE tense description of the change:";
         let ans = Text::new(msg)
-            .prompt()
-            .map_err(|e| anyhow!("Error Occurs when write committing custom subject: {}", e))?;
+            .with_validator(Self::str_empty_validator())
+            .prompt()?;
+            // .expect("Error Occurs when write committing custom subject");
         self.commit_subject = ans;
         Ok(())
+    }
+
+    pub fn str_empty_validator() -> fn(&str) -> Result<Validation, CustomUserError> {
+        |s: &str|
+            {
+                if s.is_empty() {
+                    return Ok(Validation::Invalid(ErrorMessage::Custom("The subject of commit is necessary".to_string())))
+                }
+                Ok(Validation::Valid)
+            }
     }
 
     pub fn inquire_commit_body(&mut self) -> ReviseResult<()> {
         let msg = "Provide a LONGER description of the change (optional):";
         let description = Editor::new(msg)
-            .prompt()
-            .map_err(|e| anyhow!("Error Occurs when write committing custom body: {}", e))?;
+            .prompt()?;
+            // .expect("Error Occurs when write committing custom body");
         if description.is_empty() {
             self.commit_body = None
         } else {
@@ -90,8 +103,8 @@ impl ReviseCommit {
     pub fn inquire_commit_breaking(&mut self) -> ReviseResult<()> {
         let msg = "List any BREAKING CHANGES (optional):";
         let ans = Text::new(msg)
-            .prompt()
-            .map_err(|e| anyhow!("Error Occurs when describe breaking changes: {}", e))?;
+            .prompt()?;
+            // .expect("Error Occurs when describe breaking changes");
         if ans.is_empty() {
             self.commit_breaking = None
         } else {
@@ -103,8 +116,8 @@ impl ReviseCommit {
     pub fn inquire_commit_issue(&mut self) -> ReviseResult<()> {
         let msg = "List any ISSUES by this change. E.g.= #31, #34:\n";
         let ans = Text::new(msg)
-            .prompt()
-            .map_err(|e| anyhow!("Error Occurs when select related issues: {}", e))?;
+            .prompt()?;
+            // .expect("Error Occurs when select related issues");
         if ans.is_empty() {
             self.commit_issue = None
         } else {
@@ -116,8 +129,8 @@ impl ReviseCommit {
     pub fn inquire_confirm_commit(&mut self) -> ReviseResult<()> {
         let msg = "Are you sure you want to proceed with the commit above?";
         let _ans = Text::new(msg)
-            .prompt()
-            .map_err(|e| anyhow!("Error Occurs when confirm commit: {}", e))?;
+            .prompt()?;
+            // .expect("Error Occurs when confirm commit");
         Ok(())
     }
 }
