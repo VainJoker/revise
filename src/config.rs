@@ -41,6 +41,7 @@ impl ReviseConfig {
             scopes: Vec::new(),
         }
     }
+
     pub fn get_types(&self) -> Vec<String> {
         let types = self.types.clone();
         let max_key_len = types.iter().map(|t| t.key.len()).max().unwrap();
@@ -65,6 +66,7 @@ impl ReviseConfig {
     pub fn get_scopes(&self) -> Vec<String> {
         self.scopes.clone()
     }
+
     pub fn load_config() -> ReviseResult<ReviseConfig> {
         let mut current_path = env::current_dir()?;
         current_path.push("revise.toml");
