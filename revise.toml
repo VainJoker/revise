@@ -1,18 +1,3 @@
-messages = [
-    { key = "type", value = "Select the type of change that you're committing=" },
-    { key = "scope", value = "Denote the SCOPE of this change (optional)=" },
-    { key = "customScope", value = "Denote the SCOPE of this change=" },
-    { key = "subject", value = "Write a SHORT, IMPERATIVE tense description of the change=\n" },
-    { key = "body", value = "Provide a LONGER description of the change (optional). Use '|' to break new line=\n"},
-    { key = "breaking", value = "List any BREAKING CHANGES (optional). Use '|' to break new line=\n"},
-    { key = "footerPrefixesSelect", value = "Select the ISSUES type of changeList by this change (optional)=" },
-    { key = "customFooterPrefix", value = "Input ISSUES prefix=" },
-    { key = "footer", value = "List any ISSUES by this change. E.g.= #31, #34=\n"},
-    { key = "generatingByAI", value = "Generating your AI commit subject..." },
-    { key = "generatedSelectByAI", value = "Select suitable subject by AI generated=" },
-    { key = "confirmCommit", value = "Are you sure you want to proceed with the commit above?" }
-]
-
 types = [
     { key= "feat", value= "A new feature"},
     { key= "fix", value= "A bug fix"},
@@ -51,5 +36,6 @@ scopes = [
 # left right center hidden
 emojiAlign = "hidden"
 autoAdd = true
+autoPush = true
 showDiff = true
 commitFooter = false
