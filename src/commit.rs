@@ -190,16 +190,17 @@ impl ReviseCommit {
         let mut scope_options: Vec<String> = config.get_scopes();
         scope_options.push("empty".to_string());
         scope_options.push("custom".to_string());
-        let ans = Select::new(msg, scope_options).prompt()?;
-        self.commit_scope = match ans.as_str() {
-            "custom" => {
-                let msg = "Denote the SCOPE of this change:";
-                let ans = Text::new(msg).prompt()?;
-                Some(ans).filter(|a| !a.is_empty())
-            }
-            "empty" => None,
-            _ => Some(ans),
-        };
+        let ans = Select::new(msg, scope_options)
+            .prompt()?;
+            self.commit_scope = match ans.as_str() {
+                "custom" => {
+                    let msg = "Denote the SCOPE of this change:";
+                    let ans = Text::new(msg).prompt()?;
+                    Some(ans).filter(|a| !a.is_empty())
+                }
+                "empty" => None,
+                _ => Some(ans),
+            };
         Ok(())
     }
 
@@ -239,11 +240,11 @@ impl ReviseCommit {
                 Styled::new("<skipped>").with_fg(Color::DarkYellow),
             ))
             .prompt()?;
-        if ans.is_empty() {
-            self.commit_body = None
-        } else {
-            self.commit_body = Some(ans)
-        }
+            if ans.is_empty() {
+                self.commit_body = None
+            } else {
+                self.commit_body = Some(ans)
+            }
         Ok(())
     }
 
@@ -262,12 +263,12 @@ impl ReviseCommit {
                     substr
                 }
             })
-            .prompt()?;
+        .prompt()?;
         if ans.is_empty() {
-            self.commit_breaking = None
-        } else {
-            self.commit_breaking = Some(ans)
-        }
+                self.commit_breaking = None
+            } else {
+                self.commit_breaking = Some(ans)
+            }
         Ok(())
     }
 
@@ -286,12 +287,12 @@ impl ReviseCommit {
                     substr
                 }
             })
-            .prompt()?;
+        .prompt()?;
         if ans.is_empty() {
             self.commit_issue = None
-        } else {
-            self.commit_issue = Some(ans)
-        }
+            } else {
+                self.commit_issue = Some(ans)
+            }
         Ok(())
     }
 

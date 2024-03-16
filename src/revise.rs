@@ -39,7 +39,12 @@ impl Revise {
     }
 
     pub fn call_git(&self) -> ReviseResult<()> {
-        println!("commit:{:#?}", self.commit);
+        println!("{}", self.commit.commit_message);
+        // match self.commit.commit_status {
+        //     crate::commit::CommitStatus::Submit => todo!(),
+        //     crate::commit::CommitStatus::Abort => todo!(),
+        //     crate::commit::CommitStatus::Edit => todo!(),
+        // }
         Ok(())
     }
 }
