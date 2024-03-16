@@ -1,5 +1,6 @@
 use std::{env, path::Path};
 
+use colored::Colorize;
 use serde::Deserialize;
 
 use crate::error::ReviseResult;
@@ -13,6 +14,9 @@ pub struct ReviseConfig {
     pub emoji_align: String,
     pub scopes: Vec<String>,
 }
+
+#[derive(Deserialize, Debug, Clone)]
+pub struct ReviseRenderConfig {}
 
 #[derive(Deserialize, Debug, Clone)]
 pub struct Emoji {
@@ -45,11 +49,10 @@ impl ReviseConfig {
     pub fn get_types(&self) -> Vec<String> {
         let types = self.types.clone();
         let max_key_len = types.iter().map(|t| t.key.len()).max().unwrap_or(5);
-
         types
             .into_iter()
             .map(|t| {
-                let padding = " ".repeat(max_key_len - t.key.len() + 2);
+                let padding = " ".repeat(max_key_len - t.key.len() + 1);
                 format!("{}:{}{}", t.key, padding, t.value)
             })
             .collect()
@@ -79,6 +82,13 @@ impl ReviseConfig {
                 return toml_parser(&current_path);
             }
         }
+        let msg = format!(
+            "{}",
+            "Read config file failed, loading default config!!!!!"
+                .red()
+                .on_black()
+        );
+        println!("{}", msg);
         Ok(ReviseConfig::default())
     }
 }
