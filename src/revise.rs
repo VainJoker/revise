@@ -1,6 +1,11 @@
 use inquire::InquireError;
 
-use crate::{commit::ReviseCommit, config::ReviseConfig, error::ReviseResult};
+use crate::{
+    commit::ReviseCommit,
+    config::{self, ReviseConfig},
+    error::ReviseResult,
+    git::GitUtils,
+};
 
 pub struct Revise {
     config: ReviseConfig,
@@ -15,7 +20,7 @@ impl Default for Revise {
 impl Revise {
     pub fn new() -> Self {
         let commit = ReviseCommit::default();
-        let config = ReviseConfig::load_config().unwrap_or_else(|e| {
+        let config = config::initialize_config().unwrap_or_else(|e| {
             eprintln!("Load config err: {}", e);
             std::process::exit(exitcode::CONFIG);
         });
@@ -25,7 +30,7 @@ impl Revise {
         let result = self.commit.commit(&self.config);
 
         match result {
-            Ok(_) => self.call_git(),
+            Ok(_) => self.call_git_commit(),
             Err(err) => {
                 if let Some(InquireError::OperationCanceled | InquireError::OperationInterrupted) =
                     err.downcast_ref()
@@ -38,13 +43,7 @@ impl Revise {
         }
     }
 
-    pub fn call_git(&self) -> ReviseResult<()> {
-        println!("{}", self.commit.commit_message);
-        // match self.commit.commit_status {
-        //     crate::commit::CommitStatus::Submit => todo!(),
-        //     crate::commit::CommitStatus::Abort => todo!(),
-        //     crate::commit::CommitStatus::Edit => todo!(),
-        // }
-        Ok(())
+    pub fn call_git_commit(&self) -> ReviseResult<()> {
+        GitUtils::git_commit(&self.commit.to_string())
     }
 }

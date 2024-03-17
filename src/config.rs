@@ -1,9 +1,25 @@
-use std::{env, path::Path};
+use std::sync::OnceLock;
 
 use colored::Colorize;
 use serde::Deserialize;
 
-use crate::error::ReviseResult;
+use crate::{error::ReviseResult, git::GitUtils};
+
+pub static CONFIG: OnceLock<ReviseConfig> = OnceLock::new();
+
+pub fn initialize_config() -> ReviseResult<ReviseConfig> {
+    let config = CONFIG.get_or_init(|| {
+        ReviseConfig::load_config().unwrap_or_else(|e| {
+            eprintln!("Load config err: {}", e);
+            std::process::exit(exitcode::CONFIG);
+        })
+    });
+    Ok(config.clone())
+}
+
+pub fn get_config() -> Option<&'static ReviseConfig> {
+    CONFIG.get()
+}
 
 #[derive(Deserialize, Debug, Clone)]
 pub struct ReviseConfig {
@@ -71,15 +87,15 @@ impl ReviseConfig {
     }
 
     pub fn load_config() -> ReviseResult<ReviseConfig> {
-        let mut current_path = env::current_dir()?;
+        let mut current_path = GitUtils::git_repository()?;
         current_path.push("revise.toml");
         if let Ok(true) = current_path.try_exists() {
-            return toml_parser(&current_path);
+            return Ok(toml::from_str(&std::fs::read_to_string(&current_path)?)?);
         } else if let Some(mut config_path) = dirs::config_local_dir() {
             config_path.push("revise");
             config_path.push("revise.toml");
             if let Ok(true) = config_path.try_exists() {
-                return toml_parser(&current_path);
+                return Ok(toml::from_str(&std::fs::read_to_string(&current_path)?)?);
             }
         }
         let msg = format!(
@@ -93,63 +109,53 @@ impl ReviseConfig {
     }
 }
 
-pub fn toml_parser(path: &Path) -> ReviseResult<ReviseConfig> {
-    Ok(toml::from_str(&std::fs::read_to_string(path)?)?)
-}
-
-#[test]
-fn test_toml_parser() {
-    let res = toml_parser(Path::new("./revise.toml"));
-    assert!(res.is_ok())
-}
-
 impl Default for ReviseConfig {
     fn default() -> Self {
         ReviseConfig {
             types: [
                 Type {
-                    key: "feat:     ".to_owned(),
+                    key: "feat".to_owned(),
                     value: "A new feature".to_owned(),
                 },
                 Type {
-                    key: "fix:      ".to_owned(),
+                    key: "fix".to_owned(),
                     value: "A bug fix".to_owned(),
                 },
                 Type {
-                    key: "docs:     ".to_owned(),
+                    key: "docs".to_owned(),
                     value: "Documentation only changes".to_owned(),
                 },
                 Type {
-                    key: "style:    ".to_owned(),
+                    key: "style".to_owned(),
                     value: "Changes that do not affect the meaning of the code".to_owned(),
                 },
                 Type {
-                    key: "refactor: ".to_owned(),
+                    key: "refactor".to_owned(),
                     value: "A code change that neither fixes a bug nor adds a feature".to_owned(),
                 },
                 Type {
-                    key: "perf:     ".to_owned(),
+                    key: "perf".to_owned(),
                     value: "A code change that improves performance".to_owned(),
                 },
                 Type {
-                    key: "test:     ".to_owned(),
+                    key: "test".to_owned(),
                     value: "Adding missing tests or correcting existing tests".to_owned(),
                 },
                 Type {
-                    key: "build:    ".to_owned(),
+                    key: "build".to_owned(),
                     value: "Changes that affect the build system or external dependencies"
                         .to_owned(),
                 },
                 Type {
-                    key: "ci:       ".to_owned(),
+                    key: "ci".to_owned(),
                     value: "Changes to our CI configuration files and scripts".to_owned(),
                 },
                 Type {
-                    key: "chore:    ".to_owned(),
+                    key: "chore".to_owned(),
                     value: "Other changes that don\"t modify src or test files".to_owned(),
                 },
                 Type {
-                    key: "revert:   ".to_owned(),
+                    key: "revert".to_owned(),
                     value: "Reverts a previous commit".to_owned(),
                 },
             ]
