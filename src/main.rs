@@ -1,5 +1,5 @@
+use git_revise::revise::Revise;
 use human_panic::setup_panic;
-use revise::revise::Revise;
 
 fn main() {
     setup_panic!();

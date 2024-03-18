@@ -1,5 +1,5 @@
 [package]
-name = "revise"
+name = "git-revise"
 version = "0.1.0"
 edition = "2021"
 authors = ["Jasper Zhang <vainjoker@tuta.io>"]
