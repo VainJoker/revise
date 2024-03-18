@@ -10,7 +10,7 @@ pub static CONFIG: OnceLock<ReviseConfig> = OnceLock::new();
 pub fn initialize_config() -> ReviseResult<ReviseConfig> {
     let config = CONFIG.get_or_init(|| {
         ReviseConfig::load_config().unwrap_or_else(|e| {
-            eprintln!("Load config err: {}", e);
+            eprintln!("Load config err: {e}");
             std::process::exit(exitcode::CONFIG);
         })
     });
@@ -86,16 +86,21 @@ impl ReviseConfig {
         self.scopes.clone()
     }
 
-    pub fn load_config() -> ReviseResult<ReviseConfig> {
+    pub fn load_config() -> ReviseResult<Self> {
         let mut current_path = GitUtils::git_repository()?;
         current_path.push("revise.toml");
-        if let Ok(true) = current_path.try_exists() {
-            return Ok(toml::from_str(&std::fs::read_to_string(&current_path)?)?);
-        } else if let Some(mut config_path) = dirs::config_local_dir() {
+        if matches!(current_path.try_exists(), Ok(true)) {
+            return Ok(toml::from_str(&std::fs::read_to_string(
+                &current_path,
+            )?)?);
+        }
+        if let Some(mut config_path) = dirs::config_local_dir() {
             config_path.push("revise");
             config_path.push("revise.toml");
-            if let Ok(true) = config_path.try_exists() {
-                return Ok(toml::from_str(&std::fs::read_to_string(&current_path)?)?);
+            if matches!(config_path.try_exists(), Ok(true)) {
+                return Ok(toml::from_str(&std::fs::read_to_string(
+                    &current_path,
+                )?)?);
             }
         }
         let msg = format!(
@@ -104,14 +109,14 @@ impl ReviseConfig {
                 .red()
                 .on_black()
         );
-        println!("{}", msg);
-        Ok(ReviseConfig::default())
+        println!("{msg}");
+        Ok(Self::default())
     }
 }
 
 impl Default for ReviseConfig {
     fn default() -> Self {
-        ReviseConfig {
+        Self {
             types: [
                 Type {
                     key: "feat".to_owned(),

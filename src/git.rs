@@ -30,7 +30,7 @@ impl GitUtils {
             .output()?;
         if output.status.success() {
             let res = format!("{}", "Successfully committed!".green());
-            println!("{}", res);
+            println!("{res}");
             Ok(())
         } else {
             anyhow::bail!(

@@ -1,4 +1,3 @@
-
 # configuration for https://rust-lang.github.io/rustfmt/
 version = "Two"
 newline_style = "unix"
@@ -14,3 +13,5 @@ group_imports="StdExternalCrate"
 ignore = [
     "examples",
 ]
+# length
+max_width = 80

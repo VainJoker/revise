@@ -14,14 +14,14 @@ pub struct Revise {
 
 impl Default for Revise {
     fn default() -> Self {
-        Revise::new()
+        Self::new()
     }
 }
 impl Revise {
     pub fn new() -> Self {
         let commit = ReviseCommit::default();
         let config = config::initialize_config().unwrap_or_else(|e| {
-            eprintln!("Load config err: {}", e);
+            eprintln!("Load config err: {e}");
             std::process::exit(exitcode::CONFIG);
         });
         Self { config, commit }
@@ -32,8 +32,10 @@ impl Revise {
         match result {
             Ok(_) => self.call_git_commit(),
             Err(err) => {
-                if let Some(InquireError::OperationCanceled | InquireError::OperationInterrupted) =
-                    err.downcast_ref()
+                if let Some(
+                    InquireError::OperationCanceled
+                    | InquireError::OperationInterrupted,
+                ) = err.downcast_ref()
                 {
                     Ok(())
                 } else {

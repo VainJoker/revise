@@ -34,11 +34,11 @@ pub enum CommitStatus {
 impl std::fmt::Display for CommitStatus {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         let s = match self {
-            CommitStatus::Submit => "Submit",
-            CommitStatus::Abort => "Abort",
-            CommitStatus::Edit => "Edit",
+            Self::Submit => "Submit",
+            Self::Abort => "Abort",
+            Self::Edit => "Edit",
         };
-        write!(f, "{}", s)
+        write!(f, "{s}")
     }
 }
 
@@ -47,9 +47,9 @@ impl std::str::FromStr for CommitStatus {
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         match s.to_lowercase().trim() {
-            "y" | "yes" | "" => Ok(CommitStatus::Submit),
-            "n" | "no" => Ok(CommitStatus::Abort),
-            "e" | "edit" => Ok(CommitStatus::Edit),
+            "y" | "yes" | "" => Ok(Self::Submit),
+            "n" | "no" => Ok(Self::Abort),
+            "e" | "edit" => Ok(Self::Edit),
             &_ => Err(anyhow!("input error")),
         }
     }
@@ -59,8 +59,8 @@ impl std::fmt::Display for ReviseCommit {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         let mut msg = String::new();
 
-        let _type = self.commit_type.to_string();
-        msg.push_str(&_type);
+        let ctype = &self.commit_type;
+        msg.push_str(ctype);
 
         match (&self.commit_scope, &self.commit_breaking) {
             (None, None) => {
@@ -71,7 +71,7 @@ impl std::fmt::Display for ReviseCommit {
                 msg.push_str(&scope);
             }
             (Some(scope), None) => {
-                let scope = format!("({}): ", scope);
+                let scope = format!("({scope}): ");
                 msg.push_str(&scope);
             }
             (Some(scope), Some(_)) => {
@@ -80,31 +80,32 @@ impl std::fmt::Display for ReviseCommit {
             }
         }
 
-        let subject = self.commit_subject.to_string();
-        msg.push_str(&subject);
+        let subject = &self.commit_subject;
+        msg.push_str(subject);
 
         match &self.commit_issue {
             Some(issues) => {
-                let issues = format!("({})", issues);
+                let issues = format!("({issues})");
                 msg.push_str(&issues);
             }
             None => {}
         }
         match &self.commit_body {
             Some(body) => {
-                let body = format!("\n{}", body);
+                let body = format!("\n{body}");
                 msg.push_str(&body);
             }
             None => {}
         }
         match &self.commit_breaking {
             Some(breaking) => {
-                let breaking = format!("\n\n{}: {}", "BREAKING CHANGE", breaking);
+                let breaking =
+                    format!("\n\n{}: {}", "BREAKING CHANGE", breaking);
                 msg.push_str(&breaking);
             }
             None => {}
         }
-        write!(f, "{}", msg)
+        write!(f, "{msg}")
     }
 }
 
@@ -123,8 +124,8 @@ impl ReviseCommit {
     pub fn show(&self) -> String {
         let mut msg = String::new();
 
-        let _type = format!("{}", &self.commit_type.green());
-        msg.push_str(&_type);
+        let ctype = format!("{}", &self.commit_type.green());
+        msg.push_str(&ctype);
 
         match (&self.commit_scope, &self.commit_breaking) {
             (None, None) => {
@@ -139,7 +140,8 @@ impl ReviseCommit {
                 msg.push_str(&scope);
             }
             (Some(scope), Some(_)) => {
-                let scope = format!("({}){}: ", scope.yellow(), "!".bright_red());
+                let scope =
+                    format!("({}){}: ", scope.yellow(), "!".bright_red());
                 msg.push_str(&scope);
             }
         }
@@ -156,14 +158,15 @@ impl ReviseCommit {
         }
         match &self.commit_body {
             Some(body) => {
-                let body = format!("\n{}", body);
+                let body = format!("\n{body}");
                 msg.push_str(&body);
             }
             None => {}
         }
         match &self.commit_breaking {
             Some(breaking) => {
-                let breaking = format!("\n\n{}: {}", "BREAKING CHANGE".red(), breaking);
+                let breaking =
+                    format!("\n\n{}: {}", "BREAKING CHANGE".red(), breaking);
                 msg.push_str(&breaking);
             }
             None => {}
@@ -171,7 +174,10 @@ impl ReviseCommit {
         msg
     }
 
-    pub fn inquire_commit_type(&mut self, config: &ReviseConfig) -> ReviseResult<()> {
+    pub fn inquire_commit_type(
+        &mut self,
+        config: &ReviseConfig,
+    ) -> ReviseResult<()> {
         let msg = "Select the type of change that you're committing:";
         let type_options: Vec<String> = config.get_types();
         let ans = Select::new(msg, type_options.clone()).prompt()?;
@@ -185,7 +191,10 @@ impl ReviseCommit {
         Ok(())
     }
 
-    pub fn inquire_commit_scope(&mut self, config: &ReviseConfig) -> ReviseResult<()> {
+    pub fn inquire_commit_scope(
+        &mut self,
+        config: &ReviseConfig,
+    ) -> ReviseResult<()> {
         let msg = "Denote the SCOPE of this change (optional):";
         let mut scope_options: Vec<String> = config.get_scopes();
         scope_options.push("empty".to_string());
@@ -204,7 +213,8 @@ impl ReviseCommit {
     }
 
     pub fn inquire_commit_subject(&mut self) -> ReviseResult<()> {
-        let msg = "Write a SHORT, IMPERATIVE tense description of the change:\n";
+        let msg =
+            "Write a SHORT, IMPERATIVE tense description of the change:\n";
         let ans = Text::new(msg)
             .with_help_message("Infinity more chars allowed")
             .with_validator(|s: &str| {
@@ -230,19 +240,22 @@ impl ReviseCommit {
                 } else if char_count <= 20 {
                     submission.into()
                 } else {
-                    let mut substr: String = submission.chars().take(17).collect();
+                    let mut substr: String =
+                        submission.chars().take(17).collect();
                     substr.push_str("...");
                     substr
                 }
             })
-            .with_render_config(RenderConfig::default().with_canceled_prompt_indicator(
-                Styled::new("<skipped>").with_fg(Color::DarkYellow),
-            ))
+            .with_render_config(
+                RenderConfig::default().with_canceled_prompt_indicator(
+                    Styled::new("<skipped>").with_fg(Color::DarkYellow),
+                ),
+            )
             .prompt()?;
         if ans.is_empty() {
-            self.commit_body = None
+            self.commit_body = None;
         } else {
-            self.commit_body = Some(ans)
+            self.commit_body = Some(ans);
         }
         Ok(())
     }
@@ -257,16 +270,17 @@ impl ReviseCommit {
                 } else if char_count <= 20 {
                     submission.into()
                 } else {
-                    let mut substr: String = submission.chars().take(17).collect();
+                    let mut substr: String =
+                        submission.chars().take(17).collect();
                     substr.push_str("...");
                     substr
                 }
             })
             .prompt()?;
         if ans.is_empty() {
-            self.commit_breaking = None
+            self.commit_breaking = None;
         } else {
-            self.commit_breaking = Some(ans)
+            self.commit_breaking = Some(ans);
         }
         Ok(())
     }
@@ -281,23 +295,24 @@ impl ReviseCommit {
                 } else if char_count <= 20 {
                     submission.into()
                 } else {
-                    let mut substr: String = submission.chars().take(17).collect();
+                    let mut substr: String =
+                        submission.chars().take(17).collect();
                     substr.push_str("...");
                     substr
                 }
             })
             .prompt()?;
         if ans.is_empty() {
-            self.commit_issue = None
+            self.commit_issue = None;
         } else {
-            self.commit_issue = Some(ans)
+            self.commit_issue = Some(ans);
         }
         Ok(())
     }
 
     pub fn inquire_confirm_commit(&mut self) -> ReviseResult<()> {
         self.commit_message = self.to_string();
-        let cmsg = format!(
+        let res_msg = format!(
             "{}{}{}",
             "\n###--------------------------------------------------------###\n\n"
                 .black()
@@ -309,15 +324,15 @@ impl ReviseCommit {
                 .bold()
                 .italic()
         );
-        println!("{}", cmsg);
+        println!("{res_msg}");
         let msg = "Are you sure you want to proceed with the commit above?";
         let ans = CustomType::<CommitStatus>::new(msg)
             .with_placeholder("y|n|e")
             .with_help_message("y for yes, n for no, e for edit")
             .with_error_message("Reply with 'y', 'n' or 'e'")
             .prompt()?;
-        if let CommitStatus::Edit = ans {
-            self.inquire_commit_edit()?
+        if matches!(ans, CommitStatus::Edit) {
+            self.inquire_commit_edit()?;
         } else {
             self.commit_status = ans;
         };
@@ -326,13 +341,13 @@ impl ReviseCommit {
 
     pub fn inquire_commit_edit(&mut self) -> ReviseResult<()> {
         let msg = "You Really want to edit this commit by yourself?";
-        let ans = Editor::new("")
-            .with_predefined_text(&self.to_string())
-            .with_render_config(
-                RenderConfig::default()
-                    .with_prompt_prefix(Styled::new(msg).with_fg(Color::LightRed)),
-            )
-            .prompt()?;
+        let ans =
+            Editor::new("")
+                .with_predefined_text(&self.to_string())
+                .with_render_config(RenderConfig::default().with_prompt_prefix(
+                    Styled::new(msg).with_fg(Color::LightRed),
+                ))
+                .prompt()?;
         self.commit_message = ans;
         Ok(())
     }
