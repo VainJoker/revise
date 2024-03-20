@@ -20,9 +20,13 @@ All notable changes to this project will be documented in this file.
 - *(revise)* Add commit struct for commit messages - ([f897094](https://github.com/vainjoker/revise/commit/f8970941cf9dd774b0b6e0286bee1111f0595995))
 - *(revise)* Create initial commit - ([a7a62c0](https://github.com/vainjoker/revise/commit/a7a62c06abba08c8ca5a2cdcc564a08dcd3e72cd))
 
+### 🚜 Refactor
+
+- Change the project structure - ([f91d361](https://github.com/vainjoker/revise/commit/f91d361576b211b1049c952c2e3400f2413ee25d))
+
 ### 📚 Documentation
 
-- *(docs)* Add Readme.md - ([d077622](https://github.com/vainjoker/revise/commit/d0776221ffc07cbd876408d30c8b7b727f07f7fa))
+- *(docs)* Add Readme.md - ([29a9075](https://github.com/vainjoker/revise/commit/29a90750d842591bd35214fca25d68fa3e4ae035))
 - *(docs)* Add makefile config for cliff - ([22ae3e4](https://github.com/vainjoker/revise/commit/22ae3e407425070cc050f668a9490821c41b28d3))
 - *(docs)* Change deny.toml to allow all license - ([f1cb07e](https://github.com/vainjoker/revise/commit/f1cb07ecd55ac2a10678e95c5218742425f81838))
 - *(docs)* Add revise.toml to configure revise - ([083717b](https://github.com/vainjoker/revise/commit/083717bb3169a6e0684bbe719dbba5989bebd669))

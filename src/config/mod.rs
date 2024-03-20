@@ -3,7 +3,7 @@ use std::sync::OnceLock;
 use colored::Colorize;
 use serde::Deserialize;
 
-use crate::{error::ReviseResult, git::GitUtils};
+use crate::{error::ReviseResult, utils::git::GitUtils};
 
 pub static CONFIG: OnceLock<ReviseConfig> = OnceLock::new();
 
@@ -17,8 +17,8 @@ pub fn initialize_config() -> ReviseResult<ReviseConfig> {
     Ok(config.clone())
 }
 
-pub fn get_config() -> Option<&'static ReviseConfig> {
-    CONFIG.get()
+pub fn get_config() -> &'static ReviseConfig {
+    CONFIG.get().unwrap()
 }
 
 #[derive(Deserialize, Debug, Clone)]
@@ -164,7 +164,7 @@ impl Default for ReviseConfig {
                     value: "Reverts a previous commit".to_owned(),
                 },
             ]
-            .to_vec(),
+                .to_vec(),
             emojis: [
                 Emoji {
                     key: "feat".to_owned(),
@@ -211,7 +211,7 @@ impl Default for ReviseConfig {
                     value: "◀\u{fe0f}".to_owned(),
                 },
             ]
-            .to_vec(),
+                .to_vec(),
             emoji_align: "center".to_string(),
             scopes: Vec::new(),
         }
