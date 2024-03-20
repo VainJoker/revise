@@ -8,6 +8,7 @@ All notable changes to this project will be documented in this file.
 
 - *(config)* Add toml parser function - ([ae41e11](https://github.com/vainjoker/revise/commit/ae41e11f2d93399fb9f509b3680be84789e622e2))
 - *(config)* Add toml parser for config - ([9e1c3ed](https://github.com/vainjoker/revise/commit/9e1c3ed4703965b8e853c353193a2d7028d6e02f))
+- *(revise)* Add clap to parse args - ([872b49c](https://github.com/vainjoker/revise/commit/872b49c093e1341053278e16d5155b1ee214dd66))
 - *(revise)* Completed all work to implement the commit - ([30461c0](https://github.com/vainjoker/revise/commit/30461c0323c20f6a73d72cc3e2e730a6c5d43d54))
 - *(revise)* Complete commit message - ([80a0084](https://github.com/vainjoker/revise/commit/80a0084db369cf235124175be39d1323d1bfe04a))
 - *(revise)* Format commit to string - ([528791d](https://github.com/vainjoker/revise/commit/528791d53249a38d8bf6cb66c619d0c16c637cf8))

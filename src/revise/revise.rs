@@ -44,7 +44,6 @@ impl Revise {
     }
 
     pub fn run(&mut self) -> ReviseResult<()> {
-        eprintln!("{self:#?}");
         let res = match (self.args.message.take(), self.args.command.take()) {
             (Some(_), Some(_)) => {
                 Err(anyhow!("You should not use -m with commit"))

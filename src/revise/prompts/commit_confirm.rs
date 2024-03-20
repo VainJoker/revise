@@ -31,9 +31,9 @@ pub fn inquire_confirm_commit(
         .with_help_message("y for yes, n for no, e for edit")
         .with_error_message("Reply with 'y', 'n' or 'e'")
         .prompt()?;
-    if matches!(ans, CommitStatus::Edit) {
-        Ok(inquire_commit_edit(&template.to_string())?)
-    } else {
-        Ok(template.to_string())
+
+    match ans {
+        CommitStatus::Edit => inquire_commit_edit(&template.to_string()),
+        _ => Ok(template.to_string()),
     }
 }

@@ -7,16 +7,25 @@ pub fn inquire_commit_scope(
 ) -> ReviseResult<Option<String>> {
     let msg = "Denote the SCOPE of this change (optional):";
     let mut scope_options: Vec<String> = config.get_scopes();
-    scope_options.push("empty".to_string());
-    scope_options.push("custom".to_string());
+
+    // Prepend "empty" if not present
+    if !scope_options.contains(&"empty".to_string()) {
+        scope_options.insert(0, "empty".to_string());
+    }
+
+    // Append "custom" if not present
+    if !scope_options.contains(&"custom".to_string()) {
+        scope_options.push("custom".to_string());
+    }
+
     let ans = Select::new(msg, scope_options).prompt()?;
-    match ans.as_str() {
-        "custom" => {
-            let msg = "Denote the SCOPE of this change:";
-            let ans = Text::new(msg).prompt()?;
-            Ok(Some(ans).filter(|a| !a.is_empty()))
-        }
-        "empty" => Ok(None),
-        _ => Ok(Some(ans)),
+
+    if ans == "custom" {
+        let ans = Text::new("Denote the SCOPE of this change:").prompt()?;
+        Ok(Some(ans).filter(|a| !a.is_empty()))
+    } else if ans == "empty" {
+        Ok(None)
+    } else {
+        Ok(Some(ans))
     }
 }

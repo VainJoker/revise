@@ -33,18 +33,12 @@ pub struct CommitTemplate {
 
 impl CommitTemplate {
     pub fn new() -> ReviseResult<Self> {
-        Ok(Self {
-            commit_type: inquire_commit_type(get_config())?,
-            commit_scope: inquire_commit_scope(get_config())?,
-            commit_subject: inquire_commit_subject()?,
-            commit_body: inquire_commit_body()?,
-            commit_breaking: inquire_commit_breaking()?,
-            commit_issue: inquire_commit_issue()?,
-        })
+        Ok(Self::default())
     }
     pub fn run(&mut self) -> ReviseResult<()> {
-        self.commit_type = inquire_commit_type(get_config())?;
-        self.commit_scope = inquire_commit_scope(get_config())?;
+        let config = get_config();
+        self.commit_type = inquire_commit_type(config)?;
+        self.commit_scope = inquire_commit_scope(config)?;
         self.commit_subject = inquire_commit_subject()?;
         self.commit_body = inquire_commit_body()?;
         self.commit_breaking = inquire_commit_breaking()?;

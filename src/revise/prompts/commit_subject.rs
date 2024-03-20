@@ -12,7 +12,8 @@ pub fn inquire_commit_subject() -> ReviseResult<String> {
         .with_validator(|s: &str| {
             if s.is_empty() {
                 return Ok(Validation::Invalid(ErrorMessage::Custom(
-                    "[ERROR] subject is required".to_string(),
+                    "[ERROR] Subject is required and cannot be empty"
+                        .to_string(),
                 )));
             }
             Ok(Validation::Valid)
