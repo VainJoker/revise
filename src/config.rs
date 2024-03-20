@@ -3,7 +3,7 @@ use std::sync::OnceLock;
 use colored::Colorize;
 use serde::Deserialize;
 
-use crate::{error::ReviseResult, git::GitUtils};
+use crate::{error::ReviseResult, utils::git::GitUtils};
 
 pub static CONFIG: OnceLock<ReviseConfig> = OnceLock::new();
 

@@ -1,10 +1,12 @@
+pub mod commit;
+
 use inquire::InquireError;
 
 use crate::{
-    commit::ReviseCommit,
     config::{self, ReviseConfig},
     error::ReviseResult,
-    git::GitUtils,
+    revise::commit::ReviseCommit,
+    utils::git::GitUtils,
 };
 
 pub struct Revise {
