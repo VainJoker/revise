@@ -8,7 +8,6 @@ All notable changes to this project will be documented in this file.
 
 - *(config)* Add toml parser function - ([ae41e11](https://github.com/vainjoker/revise/commit/ae41e11f2d93399fb9f509b3680be84789e622e2))
 - *(config)* Add toml parser for config - ([9e1c3ed](https://github.com/vainjoker/revise/commit/9e1c3ed4703965b8e853c353193a2d7028d6e02f))
-- *(revise)* Add clap to parse args - ([6aec1dc](https://github.com/vainjoker/revise/commit/6aec1dca01ecb3ab14107987845478bdce7ac7fc))
 - *(revise)* Completed all work to implement the commit - ([30461c0](https://github.com/vainjoker/revise/commit/30461c0323c20f6a73d72cc3e2e730a6c5d43d54))
 - *(revise)* Complete commit message - ([80a0084](https://github.com/vainjoker/revise/commit/80a0084db369cf235124175be39d1323d1bfe04a))
 - *(revise)* Format commit to string - ([528791d](https://github.com/vainjoker/revise/commit/528791d53249a38d8bf6cb66c619d0c16c637cf8))
@@ -21,9 +20,13 @@ All notable changes to this project will be documented in this file.
 - *(revise)* Add commit struct for commit messages - ([f897094](https://github.com/vainjoker/revise/commit/f8970941cf9dd774b0b6e0286bee1111f0595995))
 - *(revise)* Create initial commit - ([a7a62c0](https://github.com/vainjoker/revise/commit/a7a62c06abba08c8ca5a2cdcc564a08dcd3e72cd))
 
+### 🚜 Refactor
+
+- Change the project structure - ([f91d361](https://github.com/vainjoker/revise/commit/f91d361576b211b1049c952c2e3400f2413ee25d))
+
 ### 📚 Documentation
 
-- *(docs)* Add Readme.md - ([d077622](https://github.com/vainjoker/revise/commit/d0776221ffc07cbd876408d30c8b7b727f07f7fa))
+- *(docs)* Add Readme.md - ([29a9075](https://github.com/vainjoker/revise/commit/29a90750d842591bd35214fca25d68fa3e4ae035))
 - *(docs)* Add makefile config for cliff - ([22ae3e4](https://github.com/vainjoker/revise/commit/22ae3e407425070cc050f668a9490821c41b28d3))
 - *(docs)* Change deny.toml to allow all license - ([f1cb07e](https://github.com/vainjoker/revise/commit/f1cb07ecd55ac2a10678e95c5218742425f81838))
 - *(docs)* Add revise.toml to configure revise - ([083717b](https://github.com/vainjoker/revise/commit/083717bb3169a6e0684bbe719dbba5989bebd669))

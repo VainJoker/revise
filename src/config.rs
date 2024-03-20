@@ -17,8 +17,8 @@ pub fn initialize_config() -> ReviseResult<ReviseConfig> {
     Ok(config.clone())
 }
 
-pub fn get_config() -> Option<&'static ReviseConfig> {
-    CONFIG.get()
+pub fn get_config() -> &'static ReviseConfig {
+    CONFIG.get().unwrap()
 }
 
 #[derive(Deserialize, Debug, Clone)]
