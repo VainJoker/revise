@@ -31,6 +31,7 @@ toolchain = "nightly"
 command = "cargo"
 args = [
   "rustdoc",
+  "--lib",
   "--",
   "-Zunstable-options",
   "--check",
@@ -94,12 +95,8 @@ description = "Run documentation tests"
 command = "cargo"
 args = ["test", "--doc"]
 
-
-[tasks.install-cliff]
-description = "Install git-cliff"
-install_crate = { crate_name = "git-cliff", binary = "git-cliff", test_arg = "--help" }
-
 [tasks.changelog]
 description = "Generate changelog"
+install_crate = { crate_name = "git-cliff", binary = "git-cliff", test_arg = "--help" }
 command = "git"
 args = ["cliff", "-o", "CHANGELOG.md"]
