@@ -1,6 +1,6 @@
 [package]
 name = "git-revise"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2021"
 authors = ["Jasper Zhang <vainjoker@tuta.io>"]
 description = "A command line utility for better commit"
@@ -62,3 +62,25 @@ use_self = "warn"
 
 [profile.release]
 strip = true 
+
+# The profile that 'cargo dist' will build with
+[profile.dist]
+inherits = "release"
+lto = "thin"
+
+# Config for 'cargo dist'
+[workspace.metadata.dist]
+# This is a list of generate tasks for cargo-dist to ignore when checking if generated configuration is up to date.
+allow-dirty = ["ci", "msi"]
+# The preferred cargo-dist version to use in CI (Cargo.toml SemVer syntax)
+cargo-dist-version = "0.12.0"
+# CI backends to support
+ci = ["github"]
+# The installers to generate for each app
+installers = ["shell", "powershell"]
+# Target platforms to build apps for (Rust target-triple syntax)
+targets = ["aarch64-apple-darwin", "x86_64-apple-darwin", "x86_64-unknown-linux-gnu", "x86_64-pc-windows-msvc"]
+# Publish jobs to run in CI
+pr-run-mode = "plan"
+# Whether to install an updater program
+install-updater = true
