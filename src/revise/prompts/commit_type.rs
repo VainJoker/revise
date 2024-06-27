@@ -5,13 +5,14 @@ use crate::{config::ReviseConfig, error::ReviseResult};
 
 use super::Inquire;
 
-pub struct CType{
+#[derive(Debug,Clone)]
+pub struct Part{
     pub msg: String,
     pub ans: Option<String>,
     pub options: Vec<String>,
 }
 
-impl CType {
+impl Part {
     pub fn new() -> Self {
         // TODO:
         let options: Vec<String> = Vec::new();
@@ -23,13 +24,13 @@ impl CType {
     }
 }
 
-impl Default for CType {
+impl Default for Part {
     fn default() -> Self {
         Self::new()
     }
 }
 
-impl Inquire for CType {
+impl Inquire for Part {
     fn inquire(&mut self) -> ReviseResult<()> {
         // let options: Vec<String> = self.options;
         // let ans = Select::new(&self.msg, options).prompt()?;
@@ -41,6 +42,17 @@ impl Inquire for CType {
         //     .get_type_key(idx)
         //     .ok_or_else(|| anyhow!("Error: no type key found at position {}.", idx))?);
         Ok(())
+    }
+}
+
+impl std::fmt::Display for Part {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        let ans = self.ans.clone();
+        let res = match &ans {
+            Some(s) => s,
+            None => ""
+        };
+        write!(f, "{res}")
     }
 }
 

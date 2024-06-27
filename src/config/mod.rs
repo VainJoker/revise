@@ -5,10 +5,10 @@ use serde::Deserialize;
 
 use crate::{error::ReviseResult, utils::git::GitUtils};
 
-pub static CONFIG: OnceLock<ReviseConfig> = OnceLock::new();
+pub static CFG: OnceLock<ReviseConfig> = OnceLock::new();
 
 pub fn initialize_config() -> ReviseResult<ReviseConfig> {
-    let config = CONFIG.get_or_init(|| {
+    let config = CFG.get_or_init(|| {
         ReviseConfig::load_config().unwrap_or_else(|e| {
             eprintln!("Load config err: {e}");
             std::process::exit(exitcode::CONFIG);
@@ -18,7 +18,7 @@ pub fn initialize_config() -> ReviseResult<ReviseConfig> {
 }
 
 pub fn get_config() -> &'static ReviseConfig {
-    CONFIG.get().unwrap()
+    CFG.get().unwrap()
 }
 
 #[derive(Deserialize, Debug, Clone)]

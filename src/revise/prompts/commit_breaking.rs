@@ -7,13 +7,14 @@ use crate::error::ReviseResult;
 
 use super::Inquire;
 
-pub struct Breaking{
+#[derive(Debug,Clone)]
+pub struct Part{
     pub msg: String,
     pub ans: Option<String>,
     pub fg: Color
 }
 
-impl Breaking{
+impl Part{
     pub fn new() -> Self {
         Self {
             msg: "List any BREAKING CHANGES (optional):".to_string(),
@@ -23,13 +24,13 @@ impl Breaking{
     }
 }
 
-impl Default for Breaking {
+impl Default for Part {
     fn default() -> Self {
         Self::new()
     }
 }
 
-impl Inquire for Breaking {
+impl Inquire for Part {
     fn inquire(&mut self) -> ReviseResult<()> {
 
         let ans = Editor::new(&self.msg)
@@ -59,6 +60,16 @@ impl Inquire for Breaking {
     }
 }
 
+impl std::fmt::Display for Part {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        let ans = self.ans.clone();
+        let res = match &ans {
+            Some(s) => s,
+            None => ""
+        };
+        write!(f, "{res}")
+    }
+}
 // pub fn inquire_commit_breaking() -> ReviseResult<Option<String>> {
 //     let msg = "List any BREAKING CHANGES (optional):";
 //     let ans = Editor::new(msg)

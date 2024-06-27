@@ -2,18 +2,19 @@ use crate::{
     error::ReviseResult,
     revise::{
         // prompts::commit_edit::inquire_commit_edit, status::CommitStatus,
-        template::CommitTemplate,
+        // template::CommitTemplate,
     },
 };
 
 use super::Inquire;
 
-pub struct Confirm{
+#[derive(Debug,Clone)]
+pub struct Part{
     pub msg: String,
     pub ans: Option<String>,
 }
 
-impl Confirm {
+impl Part {
     pub fn new() -> Self {
         Self {
             msg: "Provide a LONGER description of the change (optional):".to_string(),
@@ -22,15 +23,26 @@ impl Confirm {
     }
 }
 
-impl Default for Confirm {
+impl Default for Part {
     fn default() -> Self {
         Self::new()
     }
 }
 
-impl Inquire for Confirm {
+impl Inquire for Part {
     fn inquire(&mut self) -> ReviseResult<()> {
         todo!()
+    }
+}
+
+impl std::fmt::Display for Part {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        let ans = self.ans.clone();
+        let res = match &ans {
+            Some(s) => s,
+            None => ""
+        };
+        write!(f, "{res}")
     }
 }
 

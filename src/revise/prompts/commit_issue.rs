@@ -5,12 +5,13 @@ use crate::error::ReviseResult;
 use super::Inquire;
 
 
-pub struct Issue{
+#[derive(Debug,Clone)]
+pub struct Part{
     pub msg: String,
     pub ans: Option<String>,
 }
 
-impl Issue{
+impl Part{
     pub fn new() -> Self {
         Self {
             msg: "List any ISSUES by this change. E.g.= #31, #34:".to_string(),
@@ -19,13 +20,13 @@ impl Issue{
     }
 }
 
-impl Default for Issue {
+impl Default for Part {
     fn default() -> Self {
         Self::new()
     }
 }
 
-impl Inquire for Issue {
+impl Inquire for Part {
     fn inquire(&mut self) -> ReviseResult<()> {
         let ans = Text::new(&self.msg)
             .with_formatter(&|submission| {
@@ -44,6 +45,16 @@ impl Inquire for Issue {
             _ => self.ans = Some(ans),
         };
         Ok(())
+    }
+}
+impl std::fmt::Display for Part {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        let ans = self.ans.clone();
+        let res = match &ans {
+            Some(s) => s,
+            None => ""
+        };
+        write!(f, "{res}")
     }
 }
 

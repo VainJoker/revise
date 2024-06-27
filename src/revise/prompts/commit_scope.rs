@@ -5,13 +5,14 @@ use crate::{config::ReviseConfig, error::ReviseResult};
 use super::Inquire;
 
 
-pub struct Scope{
+#[derive(Debug,Clone)]
+pub struct Part{
     pub msg: String,
     pub ans: Option<String>,
     pub options: Vec<String>
 }
 
-impl Scope {
+impl Part {
     pub fn new() -> Self {
         Self {
             msg: "Denote the SCOPE of this change (optional):".to_string(),
@@ -21,13 +22,13 @@ impl Scope {
     }
 }
 
-impl Default for Scope {
+impl Default for Part {
     fn default() -> Self {
         Self::new()
     }
 }
 
-impl Inquire for Scope {
+impl Inquire for Part {
     fn inquire(&mut self) -> ReviseResult<()> {
 
         // // Prepend "empty" if not present
@@ -53,6 +54,16 @@ impl Inquire for Scope {
         // };
         self.ans = Some(ans);
         Ok(())
+    }
+}
+impl std::fmt::Display for Part {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        let ans = self.ans.clone();
+        let res = match &ans {
+            Some(s) => s,
+            None => ""
+        };
+        write!(f, "{res}")
     }
 }
 

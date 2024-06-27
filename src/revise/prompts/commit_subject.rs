@@ -7,12 +7,13 @@ use crate::error::ReviseResult;
 
 use super::Inquire;
 
-pub struct Subject{
+#[derive(Debug,Clone)]
+pub struct Part{
     pub msg: String,
     pub ans: Option<String>,
 }
 
-impl Subject {
+impl Part {
     pub fn new() -> Self {
         Self {
             msg: "Write a SHORT, IMPERATIVE tense description of the change:\n".to_string(),
@@ -21,13 +22,13 @@ impl Subject {
     }
 }
 
-impl Default for Subject {
+impl Default for Part {
     fn default() -> Self {
         Self::new()
     }
 }
 
-impl Inquire for Subject {
+impl Inquire for Part {
     fn inquire(&mut self) -> ReviseResult<()> {
         let ans = Text::new(&self.msg)
             .with_help_message("Infinity more chars allowed")
@@ -43,6 +44,16 @@ impl Inquire for Subject {
             .prompt()?;
         self.ans = Some(ans);
         Ok(())
+    }
+}
+impl std::fmt::Display for Part {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        let ans = self.ans.clone();
+        let res = match &ans {
+            Some(s) => s,
+            None => ""
+        };
+        write!(f, "{res}")
     }
 }
 

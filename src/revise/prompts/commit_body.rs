@@ -7,13 +7,14 @@ use crate::error::ReviseResult;
 
 use super::Inquire;
 
-pub struct Body{
+#[derive(Debug,Clone)]
+pub struct Part{
     pub msg: String,
     pub ans: Option<String>,
     pub fg: Color,
 }
 
-impl Body {
+impl Part {
     pub fn new() -> Self {
         Self {
             msg: "Provide a LONGER description of the change (optional):".to_string(),
@@ -23,13 +24,14 @@ impl Body {
     }
 }
 
-impl Default for Body {
+impl Default for Part {
     fn default() -> Self {
         Self::new()
     }
 }
 
-impl Inquire for Body {
+
+impl Inquire for Part {
     fn inquire(&mut self) -> ReviseResult<()> {
 
         let ans = Editor::new(&self.msg)
@@ -58,6 +60,18 @@ impl Inquire for Body {
         Ok(())
     }
 }
+
+impl std::fmt::Display for Part {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        let ans = self.ans.clone();
+        let res = match &ans {
+            Some(s) => s,
+            None => ""
+        };
+        write!(f, "{res}")
+    }
+}
+
 //     fn inquire(&mut self, _: &ReviseConfig) -> ReviseResult<Option<String>> {
 //         }
 // }
@@ -87,3 +101,30 @@ impl Inquire for Body {
 //         _ => Ok(Some(ans)),
 //     }
 // }
+#[cfg(test)]
+
+mod tests{
+
+    #[test]
+    fn test_format_with_option() {
+        struct A {
+            a: Option<String>
+        }
+
+        impl std::fmt::Display for A {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                let s = match &self.a{
+                    Some(l) => l,
+                    None => ""
+                };
+                write!(f,"{s}")
+            }
+        }
+        let a = A{a: Some("123456".to_owned())};
+        let b = A{a: None};
+        println!("{a}{b}{a}");
+        // println!("{b}");
+
+    }
+
+}

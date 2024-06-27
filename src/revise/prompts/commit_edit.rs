@@ -7,14 +7,15 @@ use crate::error::ReviseResult;
 
 use super::Inquire;
 
-pub struct Edit{
+#[derive(Debug,Clone)]
+pub struct Part{
     pub msg: String,
     pub ans: Option<String>,
     pub commit: String,
     pub fg: Color
 }
 
-impl Edit {
+impl Part {
     pub fn new() -> Self {
         Self {
             msg: "You Really want to edit this commit manually?".to_string(),
@@ -25,13 +26,13 @@ impl Edit {
     }
 }
 
-impl Default for Edit {
+impl Default for Part {
     fn default() -> Self {
         Self::new()
     }
 }
 
-impl Inquire for Edit {
+impl Inquire for Part {
     fn inquire(&mut self) -> ReviseResult<()> {
         let ans = Editor::new("")
             .with_predefined_text(&self.commit)
@@ -42,6 +43,16 @@ impl Inquire for Edit {
             .prompt()?;
         self.ans = Some(ans);
         Ok(())
+    }
+}
+impl std::fmt::Display for Part {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        let ans = self.ans.clone();
+        let res = match &ans {
+            Some(s) => s,
+            None => ""
+        };
+        write!(f, "{res}")
     }
 }
 
