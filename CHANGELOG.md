@@ -37,7 +37,7 @@ All notable changes to this project will be documented in this file.
 
 ### ⚙️  Miscellaneous Tasks
 
-- Add cargo-dist to generate release - ([4d5a099](https://github.com/vainjoker/revise/commit/4d5a099709289411c70153b166e4c92ddae7b33a))
+- Add cargo-dist to generate release - ([f5fda12](https://github.com/vainjoker/revise/commit/f5fda12998ccd8d9e6eed5f23426596ef102390e))
 - Change ci/cd config - ([304a59f](https://github.com/vainjoker/revise/commit/304a59f86e43c0e22fd7fc88c4c423e01373f48f))
 
 ### Build

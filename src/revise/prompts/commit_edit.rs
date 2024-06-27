@@ -5,14 +5,54 @@ use inquire::{
 
 use crate::error::ReviseResult;
 
-pub fn inquire_commit_edit(messages: &str) -> ReviseResult<String> {
-    let msg = "You Really want to edit this commit manually?";
-    let ans = Editor::new("")
-        .with_predefined_text(messages)
-        .with_render_config(
-            RenderConfig::default()
-                .with_prompt_prefix(Styled::new(msg).with_fg(Color::LightRed)),
-        )
-        .prompt()?;
-    Ok(ans)
+use super::Inquire;
+
+pub struct Edit{
+    pub msg: String,
+    pub ans: Option<String>,
+    pub commit: String,
+    pub fg: Color
 }
+
+impl Edit {
+    pub fn new() -> Self {
+        Self {
+            msg: "You Really want to edit this commit manually?".to_string(),
+            ans: None,
+            commit: "".to_string(),
+            fg: Color::LightRed
+        }
+    }
+}
+
+impl Default for Edit {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
+impl Inquire for Edit {
+    fn inquire(&mut self) -> ReviseResult<()> {
+        let ans = Editor::new("")
+            .with_predefined_text(&self.commit)
+            .with_render_config(
+                RenderConfig::default()
+                .with_prompt_prefix(Styled::new(self.msg.as_str()).with_fg(self.fg)),
+            )
+            .prompt()?;
+        self.ans = Some(ans);
+        Ok(())
+    }
+}
+
+// pub fn inquire_commit_edit(messages: &str) -> ReviseResult<String> {
+//     let msg = "You Really want to edit this commit manually?";
+//     let ans = Editor::new("")
+//         .with_predefined_text(messages)
+//         .with_render_config(
+//             RenderConfig::default()
+//                 .with_prompt_prefix(Styled::new(msg).with_fg(Color::LightRed)),
+//         )
+//         .prompt()?;
+//     Ok(ans)
+// }

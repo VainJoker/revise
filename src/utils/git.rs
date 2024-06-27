@@ -8,20 +8,26 @@ pub struct GitUtils {}
 
 impl GitUtils {
     pub fn git_repository() -> ReviseResult<PathBuf> {
-        let output = Command::new("git")
-            .arg("rev-parse")
-            .arg("--show-toplevel")
-            .output()?;
-        if output.status.success() {
-            Ok(String::from_utf8(output.stdout)?.trim().into())
-        } else {
-            anyhow::bail!(
-                "Find git repo path failed: {}",
-                String::from_utf8(output.stderr)?
-            )
-        }
+        let current_path = std::env::current_dir().expect("Failed");
+        let repository = git2::Repository::discover(current_path).expect("Failed");
+        eprintln!("{:#?}",repository.path());
+        Ok(PathBuf::new())
     }
-
+    // pub fn git_repository() -> ReviseResult<PathBuf> {
+    //     let output = Command::new("git")
+    //         .arg("rev-parse")
+    //         .arg("--show-toplevel")
+    //         .output()?;
+    //     if output.status.success() {
+    //         Ok(String::from_utf8(output.stdout)?.trim().into())
+    //     } else {
+    //         anyhow::bail!(
+    //             "Find git repo path failed: {}",
+    //             String::from_utf8(output.stderr)?
+    //         )
+    //     }
+    // }
+    //
     pub fn git_commit(msg: &str) -> ReviseResult<()> {
         let output = Command::new("git")
             .arg("commit")
@@ -39,4 +45,15 @@ impl GitUtils {
             )
         }
     }
+}
+
+#[cfg(test)]
+mod tests{
+    use super::*;
+
+    #[test]
+    fn test_git_repository() {
+        GitUtils::git_repository().unwrap();
+    }
+
 }

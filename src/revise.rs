@@ -2,15 +2,38 @@ pub mod commit;
 pub mod prompts;
 pub mod status;
 pub mod template;
+pub mod ai;
+
 use inquire::InquireError;
+use status::CommitStatus;
 
 use crate::{
     config, error::ReviseResult, revise::commit::ReviseCommit,
     utils::git::GitUtils,
 };
 
-pub struct Revise {
-    commit: ReviseCommit,
+// pub struct Revise {
+//     // commit: ReviseCommit,
+// }
+#[derive(Debug, Default)]
+pub struct Revise{
+    pub template: CommitTemplate,
+    pub status: CommitStatus,
+    pub message: String,
+}
+
+impl std::fmt::Display for ReviseCommit {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{}", self.message)
+    }
+}
+
+impl ReviseCommit {
+    pub fn run(&mut self) -> ReviseResult<()> {
+        self.template.run()?;
+        self.message = self.template.to_string();
+        Ok(())
+    }
 }
 
 impl Default for Revise {
@@ -19,6 +42,7 @@ impl Default for Revise {
     }
 }
 impl Revise {
+
     pub fn new() -> Self {
         config::initialize_config().unwrap_or_else(|e| {
             eprintln!("Load config err: {e}");
@@ -27,6 +51,7 @@ impl Revise {
         let commit = ReviseCommit::default();
         Self { commit }
     }
+
     pub fn run(&mut self) -> ReviseResult<()> {
         let result = self.commit.run();
 
