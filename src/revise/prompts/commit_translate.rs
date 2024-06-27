@@ -15,7 +15,7 @@ pub struct Part {
 impl Part {
     pub fn new() -> Self {
         Self {
-            msg: "Write a SHORT, IMPERATIVE tense description of the change:\n"
+            msg: "Input the commit message you want to translate:\n"
                 .to_string(),
             ans: None,
         }
@@ -31,7 +31,6 @@ impl Default for Part {
 impl Inquire for Part {
     fn inquire(&mut self) -> ReviseResult<()> {
         let ans = Text::new(&self.msg)
-            .with_help_message("Infinity more chars allowed")
             .with_validator(|s: &str| {
                 if s.is_empty() {
                     return Ok(Validation::Invalid(ErrorMessage::Custom(

@@ -1,37 +1,27 @@
-pub mod commit;
 pub mod prompts;
 pub mod status;
 pub mod template;
+
 use inquire::InquireError;
+use status::Status;
+use template::Template;
 
-use crate::{
-    config, error::ReviseResult, revise::commit::ReviseCommit,
-    utils::git::GitUtils,
-};
+use crate::{cli::ReviseCommands, error::ReviseResult, git::GitUtils};
 
+#[derive(Default, Debug)]
 pub struct Revise {
-    commit: ReviseCommit,
+    pub template: Template,
+    pub status: Status,
+    pub message: String,
 }
 
-impl Default for Revise {
-    fn default() -> Self {
-        Self::new()
-    }
-}
 impl Revise {
-    pub fn new() -> Self {
-        config::initialize_config().unwrap_or_else(|e| {
-            eprintln!("Load config err: {e}");
-            std::process::exit(exitcode::CONFIG);
-        });
-        let commit = ReviseCommit::default();
-        Self { commit }
-    }
-    pub fn run(&mut self) -> ReviseResult<()> {
-        let result = self.commit.run();
-
-        match result {
-            Ok(()) => self.call_git_commit(),
+    pub async fn run(
+        &mut self,
+        cmd: Option<ReviseCommands>,
+    ) -> ReviseResult<()> {
+        match self.template.run(&cmd).await {
+            Ok(msg) => GitUtils::new().commit(&msg),
             Err(err) => {
                 if let Some(
                     InquireError::OperationCanceled
@@ -44,9 +34,5 @@ impl Revise {
                 }
             }
         }
-    }
-
-    pub fn call_git_commit(&self) -> ReviseResult<()> {
-        GitUtils::git_commit(&self.commit.to_string())
     }
 }

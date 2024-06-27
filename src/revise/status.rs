@@ -3,14 +3,14 @@ use std::fmt::Formatter;
 use anyhow::anyhow;
 
 #[derive(Clone, Default, Debug)]
-pub enum CommitStatus {
+pub enum Status {
     #[default]
     Submit,
     Abort,
     Edit,
 }
 
-impl std::fmt::Display for CommitStatus {
+impl std::fmt::Display for Status {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         let s = match self {
             Self::Submit => "Submit",
@@ -21,7 +21,7 @@ impl std::fmt::Display for CommitStatus {
     }
 }
 
-impl std::str::FromStr for CommitStatus {
+impl std::str::FromStr for Status {
     type Err = anyhow::Error;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {

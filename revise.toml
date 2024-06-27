@@ -12,7 +12,7 @@ types = [
     { key= "revert", value= "Reverts a previous commit"}
 ]
 
-emoji = [
+emojis = [
     { key= "feat", value="✨"},
     { key= "fix", value="🐛"},
     { key= "docs", value="📚"},
@@ -26,6 +26,10 @@ emoji = [
     { key= "revert", value="◀️"}
 ]
 
+align = "hidden" # left right hidden
+
+api_key.gemini_key = "{{env}}"
+
 scopes = [
     "revise",
     "config",
@@ -33,9 +37,13 @@ scopes = [
     "docs"
 ]
 
-# left right center hidden
-emojiAlign = "hidden"
-autoAdd = true
-autoPush = true
-showDiff = true
-commitFooter = false
+[auto]
+[auto.git]
+add = false
+push = false
+diff = false
+footer = false
+[auto.commit]
+content = false
+footer = false
+

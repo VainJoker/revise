@@ -1,6 +1,7 @@
 # configuration for https://rust-lang.github.io/rustfmt/
+
 version = "Two"
-newline_style = "unix"
+newline_style = "Unix"
 # comments
 normalize_comments=true
 wrap_comments=true

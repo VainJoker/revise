@@ -1,14 +1,19 @@
-use std::sync::OnceLock;
+use std::{collections::HashMap, path::PathBuf, sync::OnceLock};
 
 use colored::Colorize;
+use realme::{Adaptor, EnvParser, EnvSource, FileSource, Realme, TomlParser};
 use serde::Deserialize;
 
-use crate::{error::ReviseResult, utils::git::GitUtils};
+use crate::{
+    error::ReviseResult,
+    git::{repo::GitRepository, GitUtils},
+};
 
-pub static CONFIG: OnceLock<ReviseConfig> = OnceLock::new();
+pub static CFG: OnceLock<ReviseConfig> = OnceLock::new();
 
 pub fn initialize_config() -> ReviseResult<ReviseConfig> {
-    let config = CONFIG.get_or_init(|| {
+    let config = CFG.get_or_init(|| {
+        dotenvy::dotenv().ok();
         ReviseConfig::load_config().unwrap_or_else(|e| {
             eprintln!("Load config err: {e}");
             std::process::exit(exitcode::CONFIG);
@@ -18,48 +23,59 @@ pub fn initialize_config() -> ReviseResult<ReviseConfig> {
 }
 
 pub fn get_config() -> &'static ReviseConfig {
-    CONFIG.get().unwrap()
+    CFG.get().unwrap()
 }
 
 #[derive(Deserialize, Debug, Clone)]
 pub struct ReviseConfig {
     pub types: Vec<Type>,
-    #[serde(rename = "emoji")]
     pub emojis: Vec<Emoji>,
-    #[serde(rename = "emojiAlign")]
-    pub emoji_align: String,
+    pub align: String,
     pub scopes: Vec<String>,
+    pub auto: Auto,
+    #[serde(default)]
+    pub api_key: HashMap<String, String>,
 }
 
-#[derive(Deserialize, Debug, Clone)]
-pub struct ReviseRenderConfig {}
+#[derive(Deserialize, Debug, Clone, Default)]
+pub struct Render {}
 
-#[derive(Deserialize, Debug, Clone)]
+#[derive(Deserialize, Debug, Clone, Default)]
 pub struct Emoji {
     pub key: String,
     pub value: String,
 }
 
-#[derive(Deserialize, Debug, Clone)]
+#[derive(Deserialize, Debug, Clone, Default)]
 pub struct Type {
     pub key: String,
     pub value: String,
 }
 
-impl Type {
-    pub fn get_type(&self) -> String {
-        format!("{}{}", self.key, self.value)
-    }
+#[derive(Deserialize, Debug, Clone, Default)]
+pub struct Auto {
+    pub git: AutoGit,
+    pub commit: AutoCommit,
+}
+
+#[allow(clippy::struct_excessive_bools)]
+#[derive(Deserialize, Debug, Clone, Copy, Default)]
+pub struct AutoGit {
+    pub add: bool,
+    pub push: bool,
+    pub diff: bool,
+    pub footer: bool,
+}
+
+#[derive(Deserialize, Debug, Clone, Copy, Default)]
+pub struct AutoCommit {
+    pub content: bool,
+    pub footer: bool,
 }
 
 impl ReviseConfig {
     pub fn new() -> Self {
-        Self {
-            types: Vec::new(),
-            emojis: Vec::new(),
-            emoji_align: String::new(),
-            scopes: Vec::new(),
-        }
+        Self::default()
     }
 
     pub fn get_types(&self) -> Vec<String> {
@@ -86,23 +102,45 @@ impl ReviseConfig {
         self.scopes.clone()
     }
 
-    pub fn load_config() -> ReviseResult<Self> {
-        let mut current_path = GitUtils::git_repository()?;
-        current_path.push("revise.toml");
-        if matches!(current_path.try_exists(), Ok(true)) {
-            return Ok(toml::from_str(&std::fs::read_to_string(
-                &current_path,
-            )?)?);
-        }
-        if let Some(mut config_path) = dirs::config_local_dir() {
-            config_path.push("revise");
-            config_path.push("revise.toml");
-            if matches!(config_path.try_exists(), Ok(true)) {
-                return Ok(toml::from_str(&std::fs::read_to_string(
-                    &current_path,
-                )?)?);
+    pub fn get_config_path() -> ReviseResult<Option<PathBuf>> {
+        let mut config_paths = Vec::new();
+
+        if let Ok(repo) = GitUtils::git_repo() {
+            if let Some(repo_root) = repo.path().parent() {
+                config_paths.push(repo_root.join("revise.toml"));
             }
         }
+
+        if let Some(config_dir) = dirs::config_local_dir() {
+            config_paths.push(config_dir.join("revise").join("revise.toml"));
+        }
+
+        let config_path = config_paths
+            .into_iter()
+            .find(|path| path.try_exists().unwrap_or(false));
+
+        Ok(config_path)
+    }
+
+    pub fn load_config() -> ReviseResult<Self> {
+        let config_path = Self::get_config_path()?;
+
+        let config = match config_path {
+            Some(path) => {
+                return Realme::builder()
+                    .load(Adaptor::new(Box::new(EnvSource::<EnvParser>::new(
+                        "REVISE_",
+                    ))))
+                    .load(Adaptor::new(Box::new(
+                        FileSource::<TomlParser>::new(path),
+                    )))
+                    .build()?
+                    .try_deserialize()
+                    .map_err(|e| anyhow::anyhow!(e.to_string()));
+            }
+            None => Self::default(),
+        };
+
         let msg = format!(
             "{}",
             "Read config file failed, loading default config!!!!!"
@@ -110,14 +148,15 @@ impl ReviseConfig {
                 .on_black()
         );
         println!("{msg}");
-        Ok(Self::default())
+        Ok(config)
     }
 }
 
+#[allow(clippy::too_many_lines)]
 impl Default for ReviseConfig {
     fn default() -> Self {
         Self {
-            types: [
+            types: vec![
                 Type {
                     key: "feat".to_owned(),
                     value: "A new feature".to_owned(),
@@ -163,9 +202,8 @@ impl Default for ReviseConfig {
                     key: "revert".to_owned(),
                     value: "Reverts a previous commit".to_owned(),
                 },
-            ]
-                .to_vec(),
-            emojis: [
+            ],
+            emojis: vec![
                 Emoji {
                     key: "feat".to_owned(),
                     value: "✨".to_owned(),
@@ -184,11 +222,11 @@ impl Default for ReviseConfig {
                 },
                 Emoji {
                     key: "refactor".to_owned(),
-                    value: "♻\u{fe0f}".to_owned(),
+                    value: "♻️".to_owned(),
                 },
                 Emoji {
                     key: "perf".to_owned(),
-                    value: "⚡\u{fe0f}".to_owned(),
+                    value: "⚡️".to_owned(),
                 },
                 Emoji {
                     key: "test".to_owned(),
@@ -196,11 +234,11 @@ impl Default for ReviseConfig {
                 },
                 Emoji {
                     key: "build".to_owned(),
-                    value: "📦\u{fe0f}".to_owned(),
+                    value: "📦️".to_owned(),
                 },
                 Emoji {
                     key: "ci".to_owned(),
-                    value: "⚙\u{fe0f}".to_owned(),
+                    value: "⚙️".to_owned(),
                 },
                 Emoji {
                     key: "chore".to_owned(),
@@ -208,12 +246,16 @@ impl Default for ReviseConfig {
                 },
                 Emoji {
                     key: "revert".to_owned(),
-                    value: "◀\u{fe0f}".to_owned(),
+                    value: "🔙".to_owned(),
                 },
-            ]
-                .to_vec(),
-            emoji_align: "center".to_string(),
+            ],
+            align: "hidden".to_string(),
             scopes: Vec::new(),
+            auto: Auto {
+                git: AutoGit::default(),
+                commit: AutoCommit::default(),
+            },
+            api_key: HashMap::new(),
         }
     }
 }

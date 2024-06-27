@@ -1,11 +1,15 @@
-use git_revise::revise::Revise;
+use git_revise::{cli, config, revise::Revise};
 use human_panic::setup_panic;
 
-fn main() {
+#[tokio::main]
+async fn main() {
     setup_panic!();
-    let mut revise = Revise::new();
-    let result = revise.run();
-    match result {
+    config::initialize_config().unwrap_or_else(|e| {
+        eprintln!("Load config err: {e}");
+        std::process::exit(exitcode::CONFIG);
+    });
+    let cmd = cli::parse_command();
+    match Revise::default().run(cmd).await {
         Ok(()) => {
             std::process::exit(exitcode::OK);
         }
