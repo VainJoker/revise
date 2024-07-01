@@ -53,7 +53,7 @@ impl Type {
 }
 
 impl ReviseConfig {
-    pub fn new() -> ReviseConfig {
+    pub fn new() -> Self {
         Self {
             types: Vec::new(),
             emojis: Vec::new(),

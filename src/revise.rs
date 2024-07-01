@@ -1,23 +1,18 @@
-pub mod commit;
 pub mod prompts;
 pub mod status;
 pub mod template;
 
-use std::fmt::Formatter;
-
-use inquire::InquireError;
+use prompts::{commit_confirm, Inquire};
 use status::Status;
 use template::Template;
 
-use crate::{
-    config, error::ReviseResult,
-    utils::git::GitUtils,
-};
+use crate::error::ReviseResult;
 
-pub struct Revise{
+#[derive(Default)]
+pub struct Revise {
     pub template: Template,
-    // pub status: Status,
-    // pub message: String,
+    pub status: Status,
+    pub message: String,
 }
 
 // impl std::fmt::Display for Revise {
@@ -26,22 +21,24 @@ pub struct Revise{
 //         // write!(f, "{}", self.message)
 //     }
 // }
-
+//
 
 impl Revise {
-
-    pub fn new() -> Self {
-        config::initialize_config().unwrap_or_else(|e| {
-            eprintln!("Load config err: {e}");
-            std::process::exit(exitcode::CONFIG);
-        });
-        Self { template: Template::default() }
-        // let commit = ReviseCommit::default();
-        // Self { commit }
-    }
+    // pub fn new() -> Self {
+    //     config::initialize_config().unwrap_or_else(|e| {
+    //         eprintln!("Load config err: {e}");
+    //         std::process::exit(exitcode::CONFIG);
+    //     });
+    //     Self { template: Template::default(), status: Status::default(),
+    // message: String::new() }     // let commit = ReviseCommit::default();
+    //     // Self { commit }
+    // }
 
     pub fn run(&mut self) -> ReviseResult<()> {
-        self.template.run();
+        self.template.run()?;
+        self.message = self.template.to_string();
+        let mut confirm = commit_confirm::Part::new(self.template.clone());
+        confirm.inquire().unwrap();
         Ok(())
         // let result = self.commit.run();
         //

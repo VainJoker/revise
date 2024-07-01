@@ -1,59 +1,63 @@
 use std::{path::PathBuf, process::Command};
 
 use colored::Colorize;
+use git2::{DiffOptions, Repository};
 
 use crate::error::ReviseResult;
 
 pub struct GitUtils {}
 
+
 impl GitUtils {
     pub fn git_repository() -> ReviseResult<PathBuf> {
-        let current_path = std::env::current_dir().expect("Failed");
-        let repository = git2::Repository::discover(current_path).expect("Failed");
-        eprintln!("{:#?}",repository.path());
+        // Ok(Repository::open_from_env()?)
+        // let current_path = std::env::current_dir()?;
+        // let repository =
+        //     git2::Repository::discover(current_path)?;
+        // let repository = git2::Repository::open_from_env()?;
         Ok(PathBuf::new())
+        // Ok(repository.path().parent().unwrap().to_path_buf())
     }
-    // pub fn git_repository() -> ReviseResult<PathBuf> {
-    //     let output = Command::new("git")
-    //         .arg("rev-parse")
-    //         .arg("--show-toplevel")
-    //         .output()?;
-    //     if output.status.success() {
-    //         Ok(String::from_utf8(output.stdout)?.trim().into())
-    //     } else {
-    //         anyhow::bail!(
-    //             "Find git repo path failed: {}",
-    //             String::from_utf8(output.stderr)?
-    //         )
-    //     }
+
+    // pub fn git_commit(msg: &str) -> ReviseResult<()> {
+    //     let r = git2::Repository::open_from_env().unwrap();
+    //     eprintln!("{:#?}",r.path());
+    //     r.commit(update_ref, author, committer, message, tree, parents);
+    //     Ok(())
     // }
-    //
-    pub fn git_commit(msg: &str) -> ReviseResult<()> {
-        let output = Command::new("git")
-            .arg("commit")
-            .arg("-m")
-            .arg(msg)
-            .output()?;
-        if output.status.success() {
-            let res = format!("{}", "Successfully committed!".green());
-            println!("{res}");
-            Ok(())
-        } else {
-            anyhow::bail!(
-                "Git commit failed: {}",
-                String::from_utf8_lossy(&output.stderr)
-            )
-        }
+
+    fn git_commit(repo: &git2::Repository) -> ReviseResult<()> {
+        let mut index = repo.index().unwrap();
+        let oid = index.write_tree().unwrap();
+        let signature = repo.signature().unwrap();
+        let parent_commit = repo.head().unwrap().peel_to_commit().unwrap();
+        let tree = repo.find_tree(oid).unwrap();
+        repo.commit(
+            Some("HEAD"),
+            &signature,
+            &signature,
+            "added some file",
+            &tree,
+            &[&parent_commit],
+        )
+            .unwrap();
+        Ok(())
     }
+
+    fn git_diff(repo: &git2::Repository) -> ReviseResult<()> {
+        let mut opts = DiffOptions::new();
+        Ok(())
+    }
+
+
 }
 
 #[cfg(test)]
-mod tests{
+mod tests {
     use super::*;
 
     #[test]
     fn test_git_repository() {
         GitUtils::git_repository().unwrap();
     }
-
 }

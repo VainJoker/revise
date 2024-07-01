@@ -1,11 +1,12 @@
+use std::fmt::Formatter;
+
 use colored::Colorize;
 
-use crate::error::ReviseResult;
-
-use super::prompts::{commit_body, commit_breaking, commit_issue, commit_scope, commit_subject, commit_type};
-
-use crate::revise::prompts::Inquire;
-
+use super::prompts::{
+    commit_body, commit_breaking, commit_issue, commit_scope, commit_subject,
+    commit_type,
+};
+use crate::{error::ReviseResult, revise::prompts::Inquire};
 
 // #[derive(Debug)]
 // pub struct Template {
@@ -16,14 +17,14 @@ use crate::revise::prompts::Inquire;
 //     pub commit_breaking: Option<String>,
 //     pub commit_issue: Option<String>,
 // }
-#[derive(Debug, Default)]
+#[derive(Debug, Default, Clone)]
 pub struct Template {
     pub commit_type: commit_type::Part,
     pub commit_scope: commit_scope::Part,
     pub commit_subject: commit_subject::Part,
     pub commit_body: commit_body::Part,
     pub commit_breaking: commit_breaking::Part,
-    pub commit_issue: commit_issue::Part
+    pub commit_issue: commit_issue::Part,
 }
 
 // #[derive(Default)]
@@ -31,9 +32,8 @@ pub struct Template {
 //     fields: Vec<Box<dyn Inquire>>,
 // }
 
-
 impl Template {
-    pub fn run(&mut self) -> ReviseResult<()>{
+    pub fn run(&mut self) -> ReviseResult<()> {
         self.commit_type.inquire()?;
         self.commit_scope.inquire()?;
         self.commit_subject.inquire()?;
@@ -43,136 +43,128 @@ impl Template {
         Ok(())
     }
 
+    pub fn get_ctype(&self) -> String {
+        self.commit_type.ans.clone().unwrap()
+    }
+    pub fn get_cscope(&self) -> Option<String> {
+        self.commit_scope.ans.clone()
+    }
+    pub fn get_csubject(&self) -> String {
+        self.commit_subject.ans.clone().unwrap()
+    }
+    pub fn get_cbody(&self) -> Option<String> {
+        self.commit_body.ans.clone()
+    }
+    pub fn get_cbreaking(&self) -> Option<String> {
+        self.commit_breaking.ans.clone()
+    }
+    pub fn get_cissue(&self) -> Option<String> {
+        self.commit_issue.ans.clone()
+    }
 
     pub fn show(&self) -> String {
         let mut msg = String::new();
 
-        // let ctype = format!("{}", &self.commit_type);
-        // let ctype = format!("{}", &self.commit_type.green());
-        let ctype = self.commit_type.ans.clone().unwrap();
-        msg.push_str(&format!("{}", &ctype.green()));
+        String::push_str(&mut msg, &format!("{}", &self.get_ctype().green()));
 
-        // match (&self.commit_scope, &self.commit_breaking) {
-        //     (None, None) => {
-        //         msg.push_str(": ");
-        //     }
-        //     (None, Some(_)) => {
-        //         let scope = format!("{}: ", "!".bright_red());
-        //         msg.push_str(&scope);
-        //     }
-        //     (Some(scope), None) => {
-        //         let scope = format!("({}): ", scope.yellow());
-        //         msg.push_str(&scope);
-        //     }
-        //     (Some(scope), Some(_)) => {
-        //         let scope =
-        //             format!("({}){}: ", scope.yellow(), "!".bright_red());
-        //         msg.push_str(&scope);
-        //     }
-        // }
-        //
-        // let subject = format!("{}", &self.commit_subject.bright_cyan());
-        // msg.push_str(&subject);
-        //
-        // match &self.commit_issue {
-        //     Some(issues) => {
-        //         let issues = format!("({})", issues.blue());
-        //         msg.push_str(&issues);
-        //     }
-        //     None => {}
-        // }
-        // match &self.commit_body {
-        //     Some(body) => {
-        //         let body = format!("\n{body}");
-        //         msg.push_str(&body);
-        //     }
-        //     None => {}
-        // }
-        // match &self.commit_breaking {
-        //     Some(breaking) => {
-        //         let breaking =
-        //             format!("\n\n{}: {}", "BREAKING CHANGE".red(), breaking);
-        //         msg.push_str(&breaking);
-        //     }
-        //     None => {}
-        // }
+        match (&self.get_cscope(), &self.get_cbreaking()) {
+            (None, None) => {
+                msg.push_str(": ");
+            }
+            (None, Some(_)) => {
+                let scope = format!("{}: ", "!".bright_red());
+                msg.push_str(&scope);
+            }
+            (Some(scope), None) => {
+                let scope = format!("({}): ", scope.yellow());
+                msg.push_str(&scope);
+            }
+            (Some(scope), Some(_)) => {
+                let scope =
+                    format!("({}){}: ", scope.yellow(), "!".bright_red());
+                msg.push_str(&scope);
+            }
+        }
+
+        let subject = format!("{}", &self.get_csubject().bright_cyan());
+        msg.push_str(&subject);
+
+        match &self.get_cissue() {
+            Some(issues) => {
+                let issues = format!("({})", issues.blue());
+                msg.push_str(&issues);
+            }
+            None => {}
+        }
+        match &self.get_cbody() {
+            Some(body) => {
+                let body = format!("\n{body}");
+                msg.push_str(&body);
+            }
+            None => {}
+        }
+        match &self.get_cbreaking() {
+            Some(breaking) => {
+                let breaking =
+                    format!("\n\n{}: {}", "BREAKING CHANGE".red(), breaking);
+                msg.push_str(&breaking);
+            }
+            None => {}
+        }
         msg
     }
 }
 
-// #[derive(Debug, Default, Clone)]
-// pub struct Template {
-//     pub commit_type: CType,
-//     pub commit_scope: CScope,
-//     pub commit_subject: CSubject,
-//     pub commit_body: CBody,
-//     pub commit_breaking: CBreaking,
-//     pub commit_issue: CIssue
-// }
+impl std::fmt::Display for Template {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        let mut msg = String::new();
 
-// impl CommitTemplate {
-//     pub fn run(&mut self) -> ReviseResult<()> {
-        // let config = get_config();
-        // self.commit_type = inquire_commit_type(config)?;
-        // self.commit_scope = inquire_commit_scope(config)?;
-        // self.commit_subject = inquire_commit_subject()?;
-        // self.commit_body = inquire_commit_body()?;
-        // self.commit_breaking = inquire_commit_breaking()?;
-        // self.commit_issue = inquire_commit_issue()?;
-    //     Ok(())
-    // }
-// }
-//
-// impl std::fmt::Display for Template {
-//     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-//         let mut msg = String::new();
-//
-//         let ctype = &self.commit_type;
-//         msg.push_str(ctype);
-//
-//         match (&self.commit_scope, &self.commit_breaking) {
-//             (None, None) => {
-//                 msg.push_str(": ");
-//             }
-//             (None, Some(_)) => {
-//                 let scope = format!("{}: ", "!");
-//                 msg.push_str(&scope);
-//             }
-//             (Some(scope), None) => {
-//                 let scope = format!("({scope}): ");
-//                 msg.push_str(&scope);
-//             }
-//             (Some(scope), Some(_)) => {
-//                 let scope = format!("({}){}: ", scope, "!");
-//                 msg.push_str(&scope);
-//             }
-//         }
-//
-//         let subject = &self.commit_subject;
-//         msg.push_str(subject);
-//
-//         match &self.commit_issue {
-//             Some(issues) => {
-//                 let issues = format!("({issues})");
-//                 msg.push_str(&issues);
-//             }
-//             None => {}
-//         }
-//         match &self.commit_body {
-//             Some(body) => {
-//                 let body = format!("\n{body}");
-//                 msg.push_str(&body);
-//             }
-//             None => {}
-//         }
-//         match &self.commit_breaking {
-//             Some(breaking) => {
-//                 let breaking =
-//                     format!("\n\n{}: {}", "BREAKING CHANGE", breaking);
-//                 msg.push_str(&breaking);
-//             }
-//             None => {}
-//         }
-//         write!(f, "{msg}")
-//     }
-// }
+        // let ctype = &self.commit_type;
+        msg.push_str(&self.get_ctype());
+
+        match (&self.get_cscope(), &self.get_cbreaking()) {
+            (None, None) => {
+                msg.push_str(": ");
+            }
+            (None, Some(_)) => {
+                let scope = format!("{}: ", "!");
+                msg.push_str(&scope);
+            }
+            (Some(scope), None) => {
+                let scope = format!("({scope}): ");
+                msg.push_str(&scope);
+            }
+            (Some(scope), Some(_)) => {
+                let scope = format!("({}){}: ", scope, "!");
+                msg.push_str(&scope);
+            }
+        }
+
+        // let subject = &self.commit_subject;
+        msg.push_str(&self.get_csubject());
+
+        match &self.get_cissue() {
+            Some(issues) => {
+                let issues = format!("({issues})");
+                msg.push_str(&issues);
+            }
+            None => {}
+        }
+        match &self.get_cbody() {
+            Some(body) => {
+                let body = format!("\n{body}");
+                msg.push_str(&body);
+            }
+            None => {}
+        }
+        match &self.get_cbreaking() {
+            Some(breaking) => {
+                let breaking =
+                    format!("\n\n{}: {}", "BREAKING CHANGE", breaking);
+                msg.push_str(&breaking);
+            }
+            None => {}
+        }
+        write!(f, "{msg}")
+    }
+}
