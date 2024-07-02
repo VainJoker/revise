@@ -22,10 +22,13 @@ exclude = [
 inquire = { version = "0.7.0", features = ["editor"] }
 dirs = "5.0.0"
 serde = { version = "1.0", features = ["derive"] }
+tokio = { version = "1.37", features = ["full"] }
+serde_json = { version = "1.0" }
+reqwest = {version = "0.12.5", features= ["json"]}
 anyhow = "1.0"
 toml = "0.8"
 exitcode = "1.1.2"
-human-panic = "1.2.3"
+human-panic = "2.0"
 colored = "2.1.0"
 git2 = "0.19.0"
 

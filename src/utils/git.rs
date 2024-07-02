@@ -1,3 +1,8 @@
+pub mod cmit;
+pub mod diff;
+pub mod repo;
+pub mod conf;
+
 use std::{path::PathBuf, process::Command};
 
 use colored::Colorize;
