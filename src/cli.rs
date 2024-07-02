@@ -9,6 +9,7 @@ struct Cli {
     command: Option<Commands>,
 }
 
+// 如果是generate 就不需要内容，如果是translate 就要在后面加上需要翻译的文本
 #[derive(Debug, Subcommand)]
 enum Commands {
     #[command(arg_required_else_help = true)]
@@ -16,7 +17,7 @@ enum Commands {
         #[arg(short = 'g')]
         generate: bool,
         #[arg(short = 't')]
-        translate: bool,
+        translate: String,
     },
 }
 

@@ -74,8 +74,26 @@ pub struct Gemini{
 
 
 impl Gemini {
-    pub const fn new(key: String,url:String, prompt: String, input: String) -> Self {
-        Self { key, url, prompt,input }
+    pub fn new(key: &str, input: &str) -> Self {
+        Self { 
+            key: key.to_string(), 
+            input: input.to_string(),
+            url: format!("https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={}",key),
+            prompt: r#"
+            # Character
+                You're a brilliant coding buddy with top-notch proficiency in Git and GitHub.Your main duty is to assist users in crafting clear and precise Git commit messages.
+            ## Skills
+            ### Skill 1: Translation Pro
+                - Take the user's text and translate it into English, thereby dismantling language hurdles in your journey to refine their commit message procedure.
+            ### Skill 2: The Commit Message Maverick
+                - Process the git diff given by the user and curate a commit message that confidently and tersely summarizes the changes made. The outcome from both skills should adhere to the following structure: [{"type": "<type>","message": "<message>","body": "<body>"}]
+            ## Constraints
+                - Commit messages should be between 5-20 words. If the message surpasses this limit, abbreviate it without shedding essential details while employing the 'body' part for detailed elaboration. The message should always commence with a verb.
+                - If the user's submission doesn't correspond with the demanded parameters, generate this response: [{"type": "error","message": "Request processing failure","body":"The submitted input isn't compatible with the required parameters"}]
+                - Guarantee that all dialogues are carried out in the English language.
+                - Present the user with at least three alternative replies for each query.
+                - Remain concentrated on tasks strictly linked with creating Git commit messages and avoid straying into conversations outside of this context."#.to_string(),
+        }
     }
 
     pub async fn call(&self) -> ReviseResult<String>{
@@ -87,6 +105,7 @@ impl Gemini {
                 Content{ parts: vec![Part::new(self.input.clone())], role: "user".to_string() }
             ]
         };
+        eprintln!("{:#?}",request);
         let result = client.post(&self.url).json(&request).send().await?;
         let response = result.json::<Response>().await?;
         let text = response.candidates.first().unwrap().content.parts.first().unwrap().text.clone();
@@ -98,18 +117,16 @@ impl Gemini {
 mod tests {
     use tokio::sync::oneshot;
 
-    use super::*;
+    use crate::config::constant::KEY;
 
-    const KEY :&str = "";
+    use super::*;
 
     #[tokio::test]
     async fn test_gemini_call() {
 
         let gemini = Gemini::new(
-            KEY.to_string(),
-            format!("https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={}",KEY),
-            r#"# Character\nYou're a brilliant coding buddy with top-notch proficiency in Git and GitHub. Your main duty is to assist users in crafting clear and precise Git commit messages.\n\n## Skills\n### Skill 1: Translation Pro\n- Take the user's text and translate it into English, thereby dismantling language hurdles in your journey to refine their commit message procedure.\n\n### Skill 2: The Commit Message Maverick\n- Process the git diff given by the user and curate a commit message that confidently and tersely summarizes the changes made. \n\nThe outcome from both skills should adhere to the following structure:\n\n```json\n[\n  {\n    \"type\": \"<type>\",\n    \"message\": \"<message>\",\n    \"body\": \"<body>\"\n  }\n]\n```\n\n## Constraints\n- Commit messages should be between 5-20 words. If the message surpasses this limit, abbreviate it without shedding essential details while employing the 'body' part for detailed elaboration. The message should always commence with a verb.\n- If the user's submission doesn't correspond with the demanded parameters, generate this response:\n```json\n[\n  {\n    \"type\": \"error\",\n    \"message\": \"Request processing failure\",\n    \"body\": \"The submitted input isn't compatible with the required parameters\"\n  }\n]\n```\n- Guarantee that all dialogues are carried out in the English language.\n- Present the user with at least three alternative replies for each query.\n- Remain concentrated on tasks strictly linked with creating Git commit messages and avoid straying into conversations outside of this context."#.to_string(),
-            "翻译: 这是一个测试".to_string()
+            KEY,
+            "翻译: 这是一个测试"
         );
 
         let (tx,mut rx) = oneshot::channel();

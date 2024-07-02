@@ -38,17 +38,18 @@ impl Template {
     }
     //
     pub async fn run_action(&mut self,action: &Action) -> ReviseResult<()> {
+        eprintln!("{:#?}",1111);
         let res = match action {
             Action::Translate => self.run_translate().await,
             Action::Generate => self.run_generate().await
         }?;
+        eprintln!("{:#?}",res);
 
         self.commit_type.inquire()?;
         self.commit_scope.inquire()?;
-        // self.commit_subject.inquire()?;
-        // self.commit_body.inquire()?;
         self.commit_breaking.inquire()?;
         self.commit_issue.inquire()?;
+        // 在这出现ai生成的选项，选择之后，之间填充入subject body,最后用户确认时修改
         Ok(())
     }
 
@@ -58,10 +59,8 @@ impl Template {
        translator.inquire()?;
         // ask ai
        let gemini = Gemini::new(
-           KEY.to_string(),
-           format!("https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={}",KEY),
-           r#"# Character\nYou're a brilliant coding buddy with top-notch proficiency in Git and GitHub. Your main duty is to assist users in crafting clear and precise Git commit messages.\n\n## Skills\n### Skill 1: Translation Pro\n- Take the user's text and translate it into English, thereby dismantling language hurdles in your journey to refine their commit message procedure.\n\n### Skill 2: The Commit Message Maverick\n- Process the git diff given by the user and curate a commit message that confidently and tersely summarizes the changes made. \n\nThe outcome from both skills should adhere to the following structure:\n\n```json\n[\n  {\n    \"type\": \"<type>\",\n    \"message\": \"<message>\",\n    \"body\": \"<body>\"\n  }\n]\n```\n\n## Constraints\n- Commit messages should be between 5-20 words. If the message surpasses this limit, abbreviate it without shedding essential details while employing the 'body' part for detailed elaboration. The message should always commence with a verb.\n- If the user's submission doesn't correspond with the demanded parameters, generate this response:\n```json\n[\n  {\n    \"type\": \"error\",\n    \"message\": \"Request processing failure\",\n    \"body\": \"The submitted input isn't compatible with the required parameters\"\n  }\n]\n```\n- Guarantee that all dialogues are carried out in the English language.\n- Present the user with at least three alternative replies for each query.\n- Remain concentrated on tasks strictly linked with creating Git commit messages and avoid straying into conversations outside of this context."#.to_string(),
-           translator.ans.clone().unwrap()
+           KEY,
+           &translator.ans.clone().unwrap()
        );
        let ans = gemini.call().await.unwrap();
        // store result
@@ -74,10 +73,8 @@ impl Template {
         let diff = repo.diff()?;
         // ask ai
        let gemini = Gemini::new(
-           KEY.to_string(),
-           format!("https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={}",KEY),
-           r#"# Character\nYou're a brilliant coding buddy with top-notch proficiency in Git and GitHub. Your main duty is to assist users in crafting clear and precise Git commit messages.\n\n## Skills\n### Skill 1: Translation Pro\n- Take the user's text and translate it into English, thereby dismantling language hurdles in your journey to refine their commit message procedure.\n\n### Skill 2: The Commit Message Maverick\n- Process the git diff given by the user and curate a commit message that confidently and tersely summarizes the changes made. \n\nThe outcome from both skills should adhere to the following structure:\n[\n  {\n    \"type\": \"<type>\",\n    \"message\": \"<message>\",\n    \"body\": \"<body>\"\n  }\n]\n## Constraints\n- Commit messages should be between 5-20 words. If the message surpasses this limit, abbreviate it without shedding essential details while employing the 'body' part for detailed elaboration. The message should always commence with a verb.\n- If the user's submission doesn't correspond with the demanded parameters, generate this response:\n[\n  {\n    \"type\": \"error\",\n    \"message\": \"Request processing failure\",\n    \"body\": \"The submitted input isn't compatible with the required parameters\"\n  }\n]\n- Guarantee that all dialogues are carried out in the English language.\n- Present the user with at least three alternative replies for each query.\n- Remain concentrated on tasks strictly linked with creating Git commit messages and avoid straying into conversations outside of this context."#.to_string(),
-           diff
+           &KEY,
+           &diff
        );
        let ans = gemini.call().await.unwrap();
        eprintln!("{:#?}",ans);
@@ -86,10 +83,8 @@ impl Template {
        let mut translator = ai_generater::Part::new(Vec::new()); 
        translator.inquire()?;
        let gemini = Gemini::new(
-           KEY.to_string(),
-           format!("https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={}",KEY),
-           r#"# Character\nYou're a brilliant coding buddy with top-notch proficiency in Git and GitHub. Your main duty is to assist users in crafting clear and precise Git commit messages.\n\n## Skills\n### Skill 1: Translation Pro\n- Take the user's text and translate it into English, thereby dismantling language hurdles in your journey to refine their commit message procedure.\n\n### Skill 2: The Commit Message Maverick\n- Process the git diff given by the user and curate a commit message that confidently and tersely summarizes the changes made. \n\nThe outcome from both skills should adhere to the following structure:\n\n```json\n[\n  {\n    \"type\": \"<type>\",\n    \"message\": \"<message>\",\n    \"body\": \"<body>\"\n  }\n]\n```\n\n## Constraints\n- Commit messages should be between 5-20 words. If the message surpasses this limit, abbreviate it without shedding essential details while employing the 'body' part for detailed elaboration. The message should always commence with a verb.\n- If the user's submission doesn't correspond with the demanded parameters, generate this response:\n```json\n[\n  {\n    \"type\": \"error\",\n    \"message\": \"Request processing failure\",\n    \"body\": \"The submitted input isn't compatible with the required parameters\"\n  }\n]\n```\n- Guarantee that all dialogues are carried out in the English language.\n- Present the user with at least three alternative replies for each query.\n- Remain concentrated on tasks strictly linked with creating Git commit messages and avoid straying into conversations outside of this context."#.to_string(),
-           translator.ans.clone().unwrap()
+           &KEY,
+           &translator.ans.clone().unwrap()
        );
        let ans = gemini.call().await.unwrap();
        // store result

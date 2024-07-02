@@ -23,10 +23,11 @@ pub enum Action {
 
 impl Revise {
 
-    pub fn run(&mut self) -> ReviseResult<()> {
+    pub async fn run(&mut self) -> ReviseResult<()> {
+        self.action = Some(Action::Translate);
         match &self.action {
             Some(action) => {
-                self.template.run_action(action)?;
+                self.template.run_action(action).await?;
                 self.message = self.template.to_string();
                 let mut confirm = commit_confirm::Part::new(self.template.clone());
                 confirm.inquire()?;
