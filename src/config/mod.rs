@@ -1,9 +1,11 @@
+pub mod constant;
+
 use std::sync::OnceLock;
 
 use colored::Colorize;
 use serde::Deserialize;
 
-use crate::{error::ReviseResult, utils::git::GitUtils};
+use crate::{error::ReviseResult, utils::git::{repo::GitRepository, GitUtils}};
 
 pub static CFG: OnceLock<ReviseConfig> = OnceLock::new();
 
@@ -87,7 +89,9 @@ impl ReviseConfig {
     }
 
     pub fn load_config() -> ReviseResult<Self> {
-        let mut current_path = GitUtils::git_repository()?;
+        let repository = GitUtils::git_repo()?;
+        let mut current_path = repository.path().to_path_buf();
+        // let mut current_path = GitUtils::git_repository()?;
         current_path.push("revise.toml");
         if matches!(current_path.try_exists(), Ok(true)) {
             return Ok(toml::from_str(&std::fs::read_to_string(

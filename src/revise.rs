@@ -13,33 +13,37 @@ pub struct Revise {
     pub template: Template,
     pub status: Status,
     pub message: String,
+    pub action: Option<Action>
 }
 
-// impl std::fmt::Display for Revise {
-//     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-//         write!(f, "{}", 1111)
-//         // write!(f, "{}", self.message)
-//     }
-// }
-//
+pub enum Action {
+    Translate,
+    Generate
+}
 
 impl Revise {
-    // pub fn new() -> Self {
-    //     config::initialize_config().unwrap_or_else(|e| {
-    //         eprintln!("Load config err: {e}");
-    //         std::process::exit(exitcode::CONFIG);
-    //     });
-    //     Self { template: Template::default(), status: Status::default(),
-    // message: String::new() }     // let commit = ReviseCommit::default();
-    //     // Self { commit }
-    // }
 
     pub fn run(&mut self) -> ReviseResult<()> {
-        self.template.run()?;
-        self.message = self.template.to_string();
-        let mut confirm = commit_confirm::Part::new(self.template.clone());
-        confirm.inquire().unwrap();
+        match &self.action {
+            Some(action) => {
+                self.template.run_action(action)?;
+                self.message = self.template.to_string();
+                let mut confirm = commit_confirm::Part::new(self.template.clone());
+                confirm.inquire()?;
+            }
+            None => {
+                self.template.run_default()?;
+                self.message = self.template.to_string();
+                let mut confirm = commit_confirm::Part::new(self.template.clone());
+                confirm.inquire()?;
+            }
+        }
         Ok(())
+    }
+
+}
+
+
         // let result = self.commit.run();
         //
         // match result {
@@ -56,9 +60,3 @@ impl Revise {
         //         }
         //     }
         // }
-    }
-
-    // pub fn call_git_commit(&self) -> ReviseResult<()> {
-    //     GitUtils::git_commit(&self.commit.to_string())
-    // }
-}

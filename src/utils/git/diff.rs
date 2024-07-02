@@ -1,5 +1,5 @@
 pub trait GitDiff {
-    fn git_diff(repo: git2::Repository) -> crate::error::ReviseResult<String> {
+    fn git_diff(repo: &git2::Repository) -> crate::error::ReviseResult<String> {
         let mut opts = git2::DiffOptions::new(); // 创建一个新的DiffOptions实例
 
         let head = repo.head()?.peel_to_tree()?; // 获取HEAD指向的tree
@@ -29,7 +29,7 @@ mod tests {
         impl GitDiff for GItDiffImpl{
         }
 
-        let _ = GItDiffImpl::git_diff(git2::Repository::open(".").unwrap()).unwrap();
+        let _ = GItDiffImpl::git_diff(&git2::Repository::open(".").unwrap()).unwrap();
 
     }
     

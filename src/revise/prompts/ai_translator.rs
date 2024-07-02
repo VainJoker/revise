@@ -10,16 +10,16 @@ use crate::error::ReviseResult;
 pub struct Part {
     pub msg: String,
     pub ans: Option<String>,
-    pub commit: String,
+    // pub commit: String,
     pub fg: Color,
 }
 
 impl Part {
-    pub fn new(commit: String) -> Self {
+    pub fn new() -> Self {
         Self {
-            msg: "You really want to edit this commit manually?".to_string(),
+            msg: "Write the git commit message, you want to translate".to_string(),
             ans: None,
-            commit,
+            // commit,
             fg: Color::LightRed,
         }
     }
@@ -28,7 +28,7 @@ impl Part {
 impl Inquire for Part {
     fn inquire(&mut self) -> ReviseResult<()> {
         let ans = Editor::new("")
-            .with_predefined_text(&self.commit)
+            // .with_predefined_text(&self.commit)
             .with_render_config(RenderConfig::default().with_prompt_prefix(
                 Styled::new(self.msg.as_str()).with_fg(self.fg),
             ))
