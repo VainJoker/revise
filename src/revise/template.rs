@@ -52,7 +52,6 @@ impl Template {
     }
 
     pub async fn run_action(&mut self, cmd: &AICommand) -> ReviseResult<()> {
-
         let cfg = config::get_config();
         let Some(key) = cfg.api_key.get("gemini_key") else {
             return Err(anyhow::anyhow!("API key not found"));

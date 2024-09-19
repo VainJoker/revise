@@ -325,6 +325,7 @@ mod tests {
         println!("{messages:#?}");
     }
 
+    #[ignore]
     #[tokio::test]
     async fn test_gemini_call() {
         dotenvy::dotenv().ok();
