@@ -164,12 +164,13 @@ impl Gemini {
                     .clone()
                     .ok_or_else(|| anyhow::anyhow!("No text found"))?
                     .clone();
-                let re = regex_lite::Regex::new(r"\[.*\]")?;
-                let mat = re
-                    .find(&text)
-                    .ok_or_else(|| anyhow::anyhow!("No match found: {:?}", text))?;
-                let mat = mat.as_str();
-                let messages: Vec<Commit> = serde_json::from_str(mat)?;
+                // let re = regex_lite::Regex::new(r"\[.*\]")?;
+                // let mat = re
+                //     .find(&text)
+                //     .ok_or_else(|| anyhow::anyhow!("No match found: {:?}",
+                // text))?; let mat = mat.as_str();
+                // eprintln!("text: {:?}", text);
+                let messages: Vec<Commit> = serde_json::from_str(&text)?;
                 let mut m = HashMap::new();
                 for message in messages {
                     let msg = format!("Message: {}", message.message);
@@ -359,21 +360,6 @@ mod tests {
     use tokio::sync::oneshot;
 
     use super::*;
-
-    #[tokio::test]
-    async fn test_serialize_response() {
-        let data = r#"
-            ```json
-                [{"type": "info", "message": "This is a test", "body": "This commit message is a simple test to illustrate the functionality."}]
-            ```
-            "#;
-        let re = regex_lite::Regex::new(r"\[.*\]").unwrap();
-        let mat = re.find(data).unwrap();
-        let mat = mat.as_str();
-        println!("{mat:#?}");
-        let messages: Vec<Commit> = serde_json::from_str(mat).unwrap();
-        println!("{messages:#?}");
-    }
 
     #[ignore]
     #[tokio::test]
