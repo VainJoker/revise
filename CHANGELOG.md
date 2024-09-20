@@ -2,7 +2,7 @@
 
 All notable changes to this project will be documented in this file.
 
-## [unreleased]
+## [0.1.3](https://github.com/vainjoker/revise/compare/v0.1.1..v0.1.3) - 2024-09-19
 
 ### ✨ Features
 
