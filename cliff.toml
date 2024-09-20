@@ -65,6 +65,8 @@ split_commits = false
 commit_preprocessors = [
   # replace issue numbers
   { pattern = '\((\w+\s)?#([0-9]+)\)', replace = "([#${2}](<REPO>/issues/${2}))" },
+  # remove commit body
+  { pattern = '\n.*', replace = "" },
 ]
 # regex for parsing and grouping commits
 commit_parsers = [
@@ -82,6 +84,7 @@ commit_parsers = [
   { message = "^chore|ci", group = "<!-- 7 -->⚙️  Miscellaneous Tasks" },
   { body = ".*security", group = "<!-- 8 -->🛡️ Security" },
   { message = "^revert", group = "<!-- 9 -->◀️ Revert" },
+  { message = "^build", group = "<!-- 10 -->📦️ Build" },
 ]
 # protect breaking changes from being skipped due to matching a skipping commit_parser
 protect_breaking_commits = false

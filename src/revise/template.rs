@@ -145,7 +145,7 @@ impl Template {
         }
         match &self.get_cbody() {
             Some(body) => {
-                let body = format!("\n{body}");
+                let body = format!("\n\n{body}");
                 msg.push_str(&body);
             }
             None => {}
@@ -199,7 +199,7 @@ impl std::fmt::Display for Template {
         }
         match &self.get_cbody() {
             Some(body) => {
-                let body = format!("\n{body}");
+                let body = format!("\n\n{body}");
                 msg.push_str(&body);
             }
             None => {}
