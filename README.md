@@ -72,7 +72,7 @@ types = [
     { key= "revert", value= "Reverts a previous commit"}
 ]
 
-emoji = [
+emojis = [
     { key= "feat", value="✨"},
     { key= "fix", value="🐛"},
     { key= "docs", value="📚"},
@@ -86,6 +86,10 @@ emoji = [
     { key= "revert", value="◀️"}
 ]
 
+align = "hidden" # left right hidden
+
+api_key.gemini_key = "{{env}}"
+
 scopes = [
     "revise",
     "config",
@@ -93,11 +97,16 @@ scopes = [
     "docs"
 ]
 
-# left right center hidden
-emojiAlign = "hidden"
-autoAdd = true
-showDiff = true
-commitFooter = false
+[auto]
+[auto.git]
+add = false
+push = false
+diff = false
+footer = false
+[auto.commit]
+content = false
+footer = false
+
 
 ```
 
@@ -105,8 +114,7 @@ commitFooter = false
 
 This is an example of how to list things you need to use the software and how to install them.
 * git
-* bat(optional)
-  
+* gemini-api-key
 
 ### Installation
 In order to install, just run the following command
@@ -137,9 +145,9 @@ git-revise
 ## Roadmap
 
 - [ ] Auto add and show diff
-- [ ] OpenAI integrated
-    - [ ] Auto translate to english
-    - [ ] Auto generate with git diff
+- [x] AI integrated
+    - [x] Auto translate to english
+    - [x] Auto generate with git diff
 - [ ] More configurable
 
 See the [open issues](https://github.com/vainjoker/revise/issues) for a full list of proposed features (and known issues).

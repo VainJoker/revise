@@ -2,13 +2,14 @@
 
 All notable changes to this project will be documented in this file.
 
-## [unreleased]
+## [0.1.4](https://github.com/vainjoker/revise/compare/v0.1.3..v0.1.4) - 2024-09-20
 
 ### ✨ Features
 
 - *(ai)* Introduce enhanced prompt for AI assistant - ([bdb47e9](https://github.com/vainjoker/revise/commit/bdb47e9d3ed0051719dd05e8d26750034babbd28))
 - *(config)* Add toml parser function - ([ae41e11](https://github.com/vainjoker/revise/commit/ae41e11f2d93399fb9f509b3680be84789e622e2))
 - *(config)* Add toml parser for config - ([9e1c3ed](https://github.com/vainjoker/revise/commit/9e1c3ed4703965b8e853c353193a2d7028d6e02f))
+- *(revise)* Bump: Version 0.1.3 to 0.1.4 - ([4d2abb9](https://github.com/vainjoker/revise/commit/4d2abb902e582bc610218cf1ec51bc33aafea2e8))
 - *(revise)* Bump: Version 0.1.1 to 0.1.3 - ([84a94fc](https://github.com/vainjoker/revise/commit/84a94fcbca3787b5242c46bc9420e9e26de2b956))
 - *(revise)* Completed all work to implement the commit - ([30461c0](https://github.com/vainjoker/revise/commit/30461c0323c20f6a73d72cc3e2e730a6c5d43d54))
 - *(revise)* Complete commit message - ([80a0084](https://github.com/vainjoker/revise/commit/80a0084db369cf235124175be39d1323d1bfe04a))

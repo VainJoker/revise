@@ -164,12 +164,6 @@ impl Gemini {
                     .clone()
                     .ok_or_else(|| anyhow::anyhow!("No text found"))?
                     .clone();
-                // let re = regex_lite::Regex::new(r"\[.*\]")?;
-                // let mat = re
-                //     .find(&text)
-                //     .ok_or_else(|| anyhow::anyhow!("No match found: {:?}",
-                // text))?; let mat = mat.as_str();
-                // eprintln!("text: {:?}", text);
                 let messages: Vec<Commit> = serde_json::from_str(&text)?;
                 let mut m = HashMap::new();
                 for message in messages {

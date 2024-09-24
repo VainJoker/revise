@@ -136,27 +136,18 @@ impl Template {
         let subject = format!("{}", &self.get_csubject().bright_cyan());
         msg.push_str(&subject);
 
-        match &self.get_cissue() {
-            Some(issues) => {
-                let issues = format!("({})", issues.blue());
-                msg.push_str(&issues);
-            }
-            None => {}
+        if let Some(issues) = &self.get_cissue() {
+            let issues = format!("({})", issues.blue());
+            msg.push_str(&issues);
         }
-        match &self.get_cbody() {
-            Some(body) => {
-                let body = format!("\n\n{body}");
-                msg.push_str(&body);
-            }
-            None => {}
+        if let Some(body) = &self.get_cbody() {
+            let body = format!("\n\n{body}");
+            msg.push_str(&body);
         }
-        match &self.get_cbreaking() {
-            Some(breaking) => {
-                let breaking =
-                    format!("\n\n{}: {}", "BREAKING CHANGE".red(), breaking);
-                msg.push_str(&breaking);
-            }
-            None => {}
+        if let Some(breaking) = &self.get_cbreaking() {
+            let breaking =
+                format!("\n\n{}: {}", "BREAKING CHANGE".red(), breaking);
+            msg.push_str(&breaking);
         }
         msg
     }
@@ -190,27 +181,17 @@ impl std::fmt::Display for Template {
         // let subject = &self.commit_subject;
         msg.push_str(&self.get_csubject());
 
-        match &self.get_cissue() {
-            Some(issues) => {
-                let issues = format!("({issues})");
-                msg.push_str(&issues);
-            }
-            None => {}
+        if let Some(issues) = &self.get_cissue() {
+            let issues = format!("({issues})");
+            msg.push_str(&issues);
         }
-        match &self.get_cbody() {
-            Some(body) => {
-                let body = format!("\n\n{body}");
-                msg.push_str(&body);
-            }
-            None => {}
+        if let Some(body) = &self.get_cbody() {
+            let body = format!("\n\n{body}");
+            msg.push_str(&body);
         }
-        match &self.get_cbreaking() {
-            Some(breaking) => {
-                let breaking =
-                    format!("\n\n{}: {}", "BREAKING CHANGE", breaking);
-                msg.push_str(&breaking);
-            }
-            None => {}
+        if let Some(breaking) = &self.get_cbreaking() {
+            let breaking = format!("\n\n{}: {}", "BREAKING CHANGE", breaking);
+            msg.push_str(&breaking);
         }
         write!(f, "{msg}")
     }
