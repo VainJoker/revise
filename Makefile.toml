@@ -38,16 +38,6 @@ args = [
   "-Dwarnings",
 ]
 
-[tasks.lint-dependencies]
-description = "Lint crate dependencies"
-toolchain = "nightly"
-command = "cargo"
-args = [
-  "deny",
-  "check",
-  "all"
-]
-
 [tasks.check]
 description = "Check code for errors and warnings"
 command = "cargo"
