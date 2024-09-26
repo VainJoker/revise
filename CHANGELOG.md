@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file.
 
+## [unreleased]
+
+### 📚 Documentation
+
+- *(docs)* Remove unused dependencies - ([3b7d186](https://github.com/vainjoker/revise/commit/3b7d18640ae0d8ccff08fe437409eef47d45dead))
+
+## [0.1.5](https://github.com/vainjoker/revise/compare/v0.1.4..v0.1.5) - 2024-09-24
+
+### ⚙️  Miscellaneous Tasks
+
+- Bump: Version 0.1.4 to 0.1.5 - ([01c783f](https://github.com/vainjoker/revise/commit/01c783f4eec918fee30b0c05a1f7f9747458ec76))
+
 ## [0.1.4](https://github.com/vainjoker/revise/compare/v0.1.3..v0.1.4) - 2024-09-20
 
 ### ✨ Features

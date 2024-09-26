@@ -74,10 +74,10 @@ impl Gemini {
         ## Constraints
         - Commit messages should be between 5-20 words
         - If the message surpasses this limit, abbreviate it without shedding essential details while employing the 'body' part for detailed elaboration
-        - Do not include prefixes like "feat:", "fix:", etc. in the commit message, just put it in <type> part, and start the commit message with a verb
+        - Do not include prefixes like "feat:", "fix:", etc. in the commit message, just put it in <type> part, and start the <message> with a verb
         - Guarantee that all dialogues are carried out in the English language, except for translation requests
         - Remain concentrated on tasks strictly linked with creating Git commit messages
-        - Remember to always provide three distinct commit message options unless handling an error or a specific translation request.
+        - Remember to always provide three distinct commit message options.
 
         ## Error Handling
         If the user's submission doesn't correspond with the demanded parameters, generate this response:

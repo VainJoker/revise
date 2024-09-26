@@ -99,7 +99,10 @@ impl ReviseConfig {
     }
 
     pub fn get_emoji(&self, key: &str) -> Option<String> {
-        self.emojis.iter().find(|e| e.key == key).map(|e| e.value.clone())
+        self.emojis
+            .iter()
+            .find(|e| e.key == key)
+            .map(|e| e.value.clone())
     }
 
     pub fn get_scopes(&self) -> Vec<String> {
@@ -143,7 +146,7 @@ impl ReviseConfig {
             }
             None => Self::default(),
         };
-       
+
         let msg = format!(
             "{}",
             "Read config file failed, loading default config!!!!!"

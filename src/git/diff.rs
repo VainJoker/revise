@@ -5,15 +5,24 @@ pub trait GitDiff {
         let head = repo.head()?.peel_to_tree()?; // 获取HEAD指向的tree
         let diff = repo.diff_tree_to_workdir(Some(&head), Some(&mut opts))?; // 获取当前工作目录与HEAD的差异
 
-        let mut content = String::new();
-        // 使用DiffFormat::Patch格式打印差异，
-        // 但尝试仅提取和传输被修改的行及其上下文
-        diff.print(git2::DiffFormat::Patch, |_, _, l| {
-            let diff = std::str::from_utf8(l.content()).unwrap();
-            content += diff;
-            true
-        })?;
+        let mut content = String::new(); // 预分配内存
 
+        diff.foreach(
+            &mut |_, _| true,
+            None,
+            None,
+            Some(&mut |_, _, line| {
+                let prefix = match line.origin() {
+                    '+' => "+",
+                    '-' => "-",
+                    _ => " ",
+                };
+                content.push_str(prefix);
+                content.push_str(&String::from_utf8_lossy(line.content()));
+                content.push('\n');
+                true
+            }),
+        )?;
         Ok(content)
     }
 }

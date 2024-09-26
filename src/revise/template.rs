@@ -120,40 +120,50 @@ impl Template {
         let mut ctx = Context::new();
         if color {
             ctx.insert("commit_type", &self.get_ctype().green().to_string());
-        ctx.insert("commit_icon", &self.get_cicon());
-        match self.get_cscope() {
-            Some(scope) => {
-                ctx.insert("commit_scope", &format!("{}", scope.yellow()));
+            ctx.insert("commit_icon", &self.get_cicon());
+            match self.get_cscope() {
+                Some(scope) => {
+                    ctx.insert("commit_scope", &format!("{}", scope.yellow()));
+                }
+                None => {
+                    ctx.insert("commit_scope", &Option::<String>::None);
+                }
             }
-            None => {
-                ctx.insert("commit_scope", &Option::<String>::None);
+            ctx.insert(
+                "commit_subject",
+                &self.get_csubject().bright_cyan().to_string(),
+            );
+            match self.get_cbody() {
+                Some(body) => {
+                    ctx.insert("commit_body", &body);
+                }
+                None => {
+                    ctx.insert("commit_body", &Option::<String>::None);
+                }
             }
-        }
-        ctx.insert("commit_subject", &self.get_csubject().bright_cyan().to_string());
-        match self.get_cbody() {
-            Some(body) => {
-                ctx.insert("commit_body", &body);
-            }
-            None => {
-                ctx.insert("commit_body", &Option::<String>::None);
-            }
-        }
-        match self.get_cbreaking() {
-            Some(breaking) => {
-                ctx.insert("commit_breaking", &format!("{}: {}", "BREAKING CHANGE".bright_red(), breaking.purple()));
-                ctx.insert("commit_breaking_symbol", &"!".bright_red().to_string());
-            }
-            None => {
+            if let Some(breaking) = self.get_cbreaking() {
+                ctx.insert(
+                    "commit_breaking",
+                    &format!(
+                        "{}: {}",
+                        "BREAKING CHANGE".bright_red(),
+                        breaking.purple()
+                    ),
+                );
+                ctx.insert(
+                    "commit_breaking_symbol",
+                    &"!".bright_red().to_string(),
+                );
+            } else {
                 ctx.insert("commit_breaking", &Option::<String>::None);
                 ctx.insert("commit_breaking_symbol", &Option::<String>::None);
             }
-        }
-        match self.get_cissue() {
-            Some(issue) => {
-                ctx.insert("commit_issue", &format!("{}", issue.blue()));
-            }
-            None => {
-                ctx.insert("commit_issue", &Option::<String>::None);
+            match self.get_cissue() {
+                Some(issue) => {
+                    ctx.insert("commit_issue", &format!("{}", issue.blue()));
+                }
+                None => {
+                    ctx.insert("commit_issue", &Option::<String>::None);
                 }
             }
         } else {
@@ -162,21 +172,20 @@ impl Template {
             ctx.insert("commit_scope", &self.get_cscope());
             ctx.insert("commit_subject", &self.get_csubject());
             ctx.insert("commit_body", &self.get_cbody());
-            match self.get_cbreaking() {
-                Some(breaking) => {
-                    ctx.insert("commit_breaking", &format!("{}: {}", "BREAKING CHANGE", breaking));
-                    ctx.insert("commit_breaking_symbol", &"!".to_string());
-                }
-                None => {
-                    ctx.insert("commit_breaking", &Option::<String>::None);
-                    ctx.insert("commit_breaking_symbol", &Option::<String>::None);
-                }
+            if let Some(breaking) = self.get_cbreaking() {
+                ctx.insert(
+                    "commit_breaking",
+                    &format!("{}: {}", "BREAKING CHANGE", breaking),
+                );
+                ctx.insert("commit_breaking_symbol", &"!".to_string());
+            } else {
+                ctx.insert("commit_breaking", &Option::<String>::None);
+                ctx.insert("commit_breaking_symbol", &Option::<String>::None);
             }
             ctx.insert("commit_issue", &self.get_cissue());
         }
-        
-        let rendered = tera.render("template", &ctx).unwrap();
-        rendered
+
+        tera.render("template", &ctx).unwrap()
     }
 }
 
@@ -187,15 +196,13 @@ impl std::fmt::Display for Template {
     }
 }
 
-
 #[test]
 fn test_template() {
-    
     config::initialize_config().unwrap_or_else(|e| {
         eprintln!("Load config err: {e}");
         std::process::exit(exitcode::CONFIG);
     });
-    
+
     let t = Template {
         commit_type: commit_type::Part {
             ans: Some("feat".to_string()),
@@ -224,5 +231,5 @@ fn test_template() {
     };
     let s = t.template(true);
     println!("{s}");
-    println!("{}", t);
+    println!("{t}");
 }
