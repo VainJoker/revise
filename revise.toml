@@ -21,7 +21,7 @@ emojis = [
     { key= "perf", value="⚡️"},
     { key= "test", value="✅"},
     { key= "build", value="📦️"},
-    { key= "ci", value="⚙️"},
+    { key= "ci", value="🪶"},
     { key= "chore", value="🔨"},
     { key= "revert", value="◀️"}
 ]
