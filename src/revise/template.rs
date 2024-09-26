@@ -1,6 +1,7 @@
 use std::fmt::Formatter;
 
 use colored::Colorize;
+use tera::{Context, Tera};
 use tokio::task;
 
 use super::prompts::{
@@ -93,6 +94,9 @@ impl Template {
     pub fn get_ctype(&self) -> String {
         self.commit_type.ans.clone().unwrap()
     }
+    pub fn get_cicon(&self) -> String {
+        config::get_config().get_emoji(&self.get_ctype()).unwrap()
+    }
     pub fn get_cscope(&self) -> Option<String> {
         self.commit_scope.ans.clone()
     }
@@ -109,90 +113,116 @@ impl Template {
         self.commit_issue.ans.clone()
     }
 
-    pub fn show(&self) -> String {
-        let mut msg = String::new();
-
-        String::push_str(&mut msg, &format!("{}", &self.get_ctype().green()));
-
-        match (&self.get_cscope(), &self.get_cbreaking()) {
-            (None, None) => {
-                msg.push_str(": ");
+    pub fn template(&self, color: bool) -> String {
+        let cfg = config::get_config();
+        let mut tera = Tera::default();
+        tera.add_raw_template("template", &cfg.template).unwrap();
+        let mut ctx = Context::new();
+        if color {
+            ctx.insert("commit_type", &self.get_ctype().green().to_string());
+        ctx.insert("commit_icon", &self.get_cicon());
+        match self.get_cscope() {
+            Some(scope) => {
+                ctx.insert("commit_scope", &format!("{}", scope.yellow()));
             }
-            (None, Some(_)) => {
-                let scope = format!("{}: ", "!".bright_red());
-                msg.push_str(&scope);
-            }
-            (Some(scope), None) => {
-                let scope = format!("({}): ", scope.yellow());
-                msg.push_str(&scope);
-            }
-            (Some(scope), Some(_)) => {
-                let scope =
-                    format!("({}){}: ", scope.yellow(), "!".bright_red());
-                msg.push_str(&scope);
+            None => {
+                ctx.insert("commit_scope", &Option::<String>::None);
             }
         }
-
-        let subject = format!("{}", &self.get_csubject().bright_cyan());
-        msg.push_str(&subject);
-
-        if let Some(issues) = &self.get_cissue() {
-            let issues = format!("({})", issues.blue());
-            msg.push_str(&issues);
+        ctx.insert("commit_subject", &self.get_csubject().bright_cyan().to_string());
+        match self.get_cbody() {
+            Some(body) => {
+                ctx.insert("commit_body", &body);
+            }
+            None => {
+                ctx.insert("commit_body", &Option::<String>::None);
+            }
         }
-        if let Some(body) = &self.get_cbody() {
-            let body = format!("\n\n{body}");
-            msg.push_str(&body);
+        match self.get_cbreaking() {
+            Some(breaking) => {
+                ctx.insert("commit_breaking", &format!("{}: {}", "BREAKING CHANGE".bright_red(), breaking.purple()));
+                ctx.insert("commit_breaking_symbol", &"!".bright_red().to_string());
+            }
+            None => {
+                ctx.insert("commit_breaking", &Option::<String>::None);
+                ctx.insert("commit_breaking_symbol", &Option::<String>::None);
+            }
         }
-        if let Some(breaking) = &self.get_cbreaking() {
-            let breaking =
-                format!("\n\n{}: {}", "BREAKING CHANGE".red(), breaking);
-            msg.push_str(&breaking);
+        match self.get_cissue() {
+            Some(issue) => {
+                ctx.insert("commit_issue", &format!("{}", issue.blue()));
+            }
+            None => {
+                ctx.insert("commit_issue", &Option::<String>::None);
+                }
+            }
+        } else {
+            ctx.insert("commit_type", &self.get_ctype());
+            ctx.insert("commit_icon", &self.get_cicon());
+            ctx.insert("commit_scope", &self.get_cscope());
+            ctx.insert("commit_subject", &self.get_csubject());
+            ctx.insert("commit_body", &self.get_cbody());
+            match self.get_cbreaking() {
+                Some(breaking) => {
+                    ctx.insert("commit_breaking", &format!("{}: {}", "BREAKING CHANGE", breaking));
+                    ctx.insert("commit_breaking_symbol", &"!".to_string());
+                }
+                None => {
+                    ctx.insert("commit_breaking", &Option::<String>::None);
+                    ctx.insert("commit_breaking_symbol", &Option::<String>::None);
+                }
+            }
+            ctx.insert("commit_issue", &self.get_cissue());
         }
-        msg
+        
+        let rendered = tera.render("template", &ctx).unwrap();
+        rendered
     }
 }
 
 impl std::fmt::Display for Template {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        let mut msg = String::new();
-
-        // let ctype = &self.commit_type;
-        msg.push_str(&self.get_ctype());
-
-        match (&self.get_cscope(), &self.get_cbreaking()) {
-            (None, None) => {
-                msg.push_str(": ");
-            }
-            (None, Some(_)) => {
-                let scope = format!("{}: ", "!");
-                msg.push_str(&scope);
-            }
-            (Some(scope), None) => {
-                let scope = format!("({scope}): ");
-                msg.push_str(&scope);
-            }
-            (Some(scope), Some(_)) => {
-                let scope = format!("({}){}: ", scope, "!");
-                msg.push_str(&scope);
-            }
-        }
-
-        // let subject = &self.commit_subject;
-        msg.push_str(&self.get_csubject());
-
-        if let Some(issues) = &self.get_cissue() {
-            let issues = format!("({issues})");
-            msg.push_str(&issues);
-        }
-        if let Some(body) = &self.get_cbody() {
-            let body = format!("\n\n{body}");
-            msg.push_str(&body);
-        }
-        if let Some(breaking) = &self.get_cbreaking() {
-            let breaking = format!("\n\n{}: {}", "BREAKING CHANGE", breaking);
-            msg.push_str(&breaking);
-        }
+        let msg = self.template(false);
         write!(f, "{msg}")
     }
+}
+
+
+#[test]
+fn test_template() {
+    
+    config::initialize_config().unwrap_or_else(|e| {
+        eprintln!("Load config err: {e}");
+        std::process::exit(exitcode::CONFIG);
+    });
+    
+    let t = Template {
+        commit_type: commit_type::Part {
+            ans: Some("feat".to_string()),
+            ..Default::default()
+        },
+        commit_scope: commit_scope::Part {
+            ans: Some("scope".to_string()),
+            ..Default::default()
+        },
+        commit_subject: commit_subject::Part {
+            ans: Some("add a new feature".to_string()),
+            ..Default::default()
+        },
+        commit_body: commit_body::Part {
+            ans: Some("add a new feature with a body".to_string()),
+            ..Default::default()
+        },
+        commit_breaking: commit_breaking::Part {
+            ans: Some("breaking change".to_string()),
+            ..Default::default()
+        },
+        commit_issue: commit_issue::Part {
+            ans: Some("#34".to_string()),
+            ..Default::default()
+        },
+    };
+    let s = t.template(true);
+    println!("{s}");
+    println!("{}", t);
 }

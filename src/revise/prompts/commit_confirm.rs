@@ -25,12 +25,6 @@ impl Part {
     }
 }
 
-// impl Default for Part {
-//     fn default() -> Self {
-//         Self::new()
-//     }
-// }
-
 impl Inquire for Part {
     fn inquire(&mut self) -> ReviseResult<()> {
         let res_msg = format!(
@@ -39,7 +33,7 @@ impl Inquire for Part {
             .black()
             .bold()
             .italic(),
-            self.template.show(),
+            self.template.template(true),
             "\n\n###--------------------------------------------------------###\n"
             .black()
             .bold()
@@ -60,7 +54,6 @@ impl Inquire for Part {
                 cedit.inquire().unwrap();
                 self.ans = cedit.ans;
             }
-            // inquire_commit_edit(&self.template.to_string()),
             _ => self.ans = Some(self.template.to_string()),
         };
         Ok(())

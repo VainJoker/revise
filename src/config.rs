@@ -28,9 +28,9 @@ pub fn get_config() -> &'static ReviseConfig {
 
 #[derive(Deserialize, Debug, Clone)]
 pub struct ReviseConfig {
+    pub template: String,
     pub types: Vec<Type>,
     pub emojis: Vec<Emoji>,
-    pub align: String,
     pub scopes: Vec<String>,
     pub auto: Auto,
     #[serde(default)]
@@ -98,6 +98,10 @@ impl ReviseConfig {
         None
     }
 
+    pub fn get_emoji(&self, key: &str) -> Option<String> {
+        self.emojis.iter().find(|e| e.key == key).map(|e| e.value.clone())
+    }
+
     pub fn get_scopes(&self) -> Vec<String> {
         self.scopes.clone()
     }
@@ -124,7 +128,6 @@ impl ReviseConfig {
 
     pub fn load_config() -> ReviseResult<Self> {
         let config_path = Self::get_config_path()?;
-
         let config = match config_path {
             Some(path) => {
                 return Realme::builder()
@@ -140,7 +143,7 @@ impl ReviseConfig {
             }
             None => Self::default(),
         };
-
+       
         let msg = format!(
             "{}",
             "Read config file failed, loading default config!!!!!"
@@ -249,13 +252,16 @@ impl Default for ReviseConfig {
                     value: "🔙".to_owned(),
                 },
             ],
-            align: "hidden".to_string(),
             scopes: Vec::new(),
             auto: Auto {
                 git: AutoGit::default(),
                 commit: AutoCommit::default(),
             },
             api_key: HashMap::new(),
+            template: String::from("
+{{commit_icon}} {{ commit_type }}{% if commit_scope %}({{commit_scope}}){% endif %}{% if commit_breaking %}!{% endif %}: {{ commit_subject }}{% if commit_issue %}({{commit_issue}}){% endif %}   
+{% if commit_body %}\n{{ commit_body }}{% endif %}
+{% if commit_breaking %}\nBREAKING CHANGE: {{ commit_breaking }}{% endif %}"),
         }
     }
 }

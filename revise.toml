@@ -26,8 +26,6 @@ emojis = [
     { key= "revert", value="◀️"}
 ]
 
-align = "hidden" # left right hidden
-
 api_key.gemini_key = "{{env}}"
 
 scopes = [
@@ -36,6 +34,12 @@ scopes = [
     "test",
     "docs"
 ]
+
+template = """
+{{commit_icon}} {{ commit_type }}{% if commit_scope %}({{commit_scope}}){% endif %}{% if commit_breaking %}{{commit_breaking_symbol}}{% endif %}: {{ commit_subject }}{% if commit_issue %}({{commit_issue}}){% endif %}   
+{% if commit_body %}\n{{ commit_body }}{% endif %}
+{% if commit_breaking %}\n{{ commit_breaking }}{% endif %}
+"""
 
 [auto]
 [auto.git]
