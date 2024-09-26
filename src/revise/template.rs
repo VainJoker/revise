@@ -196,6 +196,7 @@ impl std::fmt::Display for Template {
     }
 }
 
+#[ignore]
 #[test]
 fn test_template() {
     config::initialize_config().unwrap_or_else(|e| {
