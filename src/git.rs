@@ -24,8 +24,8 @@ impl GitUtils {
             repo: Self::git_repo().expect("Failed to get repository"),
         }
     }
-    pub fn diff(&self) -> ReviseResult<String> {
-        Self::git_diff(&self.repo)
+    pub fn diff(&self, exclude_files: &Vec<String>) -> ReviseResult<String> {
+        Self::git_diff(&self.repo, exclude_files)
     }
     pub fn commit(&self, message: &str) -> ReviseResult<()> {
         Ok(Self::git_cmit(&self.repo, message)?)

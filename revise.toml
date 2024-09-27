@@ -35,6 +35,10 @@ scopes = [
     "docs"
 ]
 
+exclude_files = [
+    "CHANGELOG.md"
+]
+
 template = """
 {{commit_icon}} {{ commit_type }}{% if commit_scope %}({{commit_scope}}){% endif %}{% if commit_breaking %}{{commit_breaking_symbol}}{% endif %}: {{ commit_subject }}{% if commit_issue %}({{commit_issue}}){% endif %}   
 {% if commit_body %}\n{{ commit_body }}{% endif %}

@@ -38,6 +38,8 @@ pub struct ReviseConfig {
     pub api_key: HashMap<String, String>,
     #[serde(deserialize_with = "deserialize_hooks")]
     pub hooks: HashMap<HookType, Vec<Hook>>,
+    #[serde(default)]
+    pub exclude_files: Vec<String>,
 }
 
 #[derive(Deserialize, Debug, Clone, Default)]
@@ -291,6 +293,7 @@ impl Default for ReviseConfig {
             },
             api_key: HashMap::new(),
             hooks: HashMap::new(),
+            exclude_files: Vec::new(),
             template: String::from("
 {{commit_icon}} {{ commit_type }}{% if commit_scope %}({{commit_scope}}){% endif %}{% if commit_breaking %}!{% endif %}: {{ commit_subject }}{% if commit_issue %}({{commit_issue}}){% endif %}   
 {% if commit_body %}\n{{ commit_body }}{% endif %}

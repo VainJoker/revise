@@ -59,9 +59,10 @@ impl Template {
         };
 
         let gemini = Gemini::new(key);
+        let exclude_files = cfg.exclude_files.clone();
         let mut s = match cmd {
-            AICommand::Translate(s) => s.to_string(),
-            AICommand::Generate => GitUtils::new().diff()?,
+            AICommand::Translate(s) => {s.to_string()},
+            AICommand::Generate => GitUtils::new().diff(&exclude_files)?,
         };
         if s.is_empty() {
             let mut translate = commit_translate::Part::new();
