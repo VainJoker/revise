@@ -51,3 +51,23 @@ footer = false
 content = false
 footer = false
 
+[hooks]
+pre-add = [
+   { command = "cargo fmt", order = 1 },
+]
+post-add = [
+    { command = "cargo test", order = 1 },
+]
+pre-commit = [
+    { command = "cargo make", order = 2, skip = true },
+    { command = "cargo clippy --fix --allow-dirty --allow-staged", order = 1, skip = true }
+]
+post-commit = [
+    { command = "cargo test", order = 1, skip = true },
+]
+pre-push = [
+    { command = "cargo test", order = 1, skip = true },
+]
+post-push = [
+    { command = "cargo test", order = 1, skip = true },
+]

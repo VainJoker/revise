@@ -46,7 +46,7 @@ args = ["check"]
 [tasks.build]
 description = "Compile the project"
 command = "cargo"
-args = ["build"]
+args = ["build", "--release"]
 
 [tasks.clippy]
 description = "Run Clippy for linting"

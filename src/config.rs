@@ -1,4 +1,4 @@
-use std::{collections::HashMap, path::PathBuf, sync::OnceLock};
+use std::{collections::HashMap, path::PathBuf, str::FromStr, sync::OnceLock};
 
 use colored::Colorize;
 use realme::{Adaptor, EnvParser, EnvSource, FileSource, Realme, TomlParser};
@@ -7,6 +7,7 @@ use serde::Deserialize;
 use crate::{
     error::ReviseResult,
     git::{repo::GitRepository, GitUtils},
+    hook::HookType,
 };
 
 pub static CFG: OnceLock<ReviseConfig> = OnceLock::new();
@@ -35,6 +36,8 @@ pub struct ReviseConfig {
     pub auto: Auto,
     #[serde(default)]
     pub api_key: HashMap<String, String>,
+    #[serde(deserialize_with = "deserialize_hooks")]
+    pub hooks: HashMap<HookType, Vec<Hook>>,
 }
 
 #[derive(Deserialize, Debug, Clone, Default)]
@@ -58,6 +61,13 @@ pub struct Auto {
     pub commit: AutoCommit,
 }
 
+#[derive(Deserialize, Debug, Clone, Default)]
+pub struct Hook {
+    pub command: String,
+    pub order: Option<u32>,
+    pub skip: Option<bool>,
+}
+
 #[allow(clippy::struct_excessive_bools)]
 #[derive(Deserialize, Debug, Clone, Copy, Default)]
 pub struct AutoGit {
@@ -71,6 +81,25 @@ pub struct AutoGit {
 pub struct AutoCommit {
     pub content: bool,
     pub footer: bool,
+}
+
+fn deserialize_hooks<'de, D>(
+    deserializer: D,
+) -> Result<HashMap<HookType, Vec<Hook>>, D::Error>
+where
+    D: serde::Deserializer<'de>,
+{
+    let raw_hooks: HashMap<String, Vec<Hook>> =
+        HashMap::deserialize(deserializer)?;
+    let mut hooks = HashMap::new();
+
+    for (key, value) in raw_hooks {
+        if let Ok(hook_type) = HookType::from_str(&key) {
+            hooks.insert(hook_type, value);
+        }
+    }
+
+    Ok(hooks)
 }
 
 impl ReviseConfig {
@@ -261,6 +290,7 @@ impl Default for ReviseConfig {
                 commit: AutoCommit::default(),
             },
             api_key: HashMap::new(),
+            hooks: HashMap::new(),
             template: String::from("
 {{commit_icon}} {{ commit_type }}{% if commit_scope %}({{commit_scope}}){% endif %}{% if commit_breaking %}!{% endif %}: {{ commit_subject }}{% if commit_issue %}({{commit_issue}}){% endif %}   
 {% if commit_body %}\n{{ commit_body }}{% endif %}
