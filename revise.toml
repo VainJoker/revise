@@ -45,6 +45,10 @@ template = """
 {% if commit_breaking %}\n{{ commit_breaking }}{% endif %}
 """
 
+[translation]
+from = "中文"
+to = "English"
+
 [auto]
 [auto.git]
 add = false
@@ -57,21 +61,14 @@ footer = false
 
 [hooks]
 pre-add = [
-   { command = "cargo fmt", order = 1 },
+    { command = "cargo clippy --fix --allow-dirty --allow-staged", order = 1 },
+    { command = "cargo make", order = 2 },
 ]
 post-add = [
-    { command = "cargo test", order = 1 },
+    { command = "git status", order = 1 },
 ]
 pre-commit = [
-    { command = "cargo make", order = 2, skip = true },
-    { command = "cargo clippy --fix --allow-dirty --allow-staged", order = 1, skip = true }
 ]
 post-commit = [
-    { command = "cargo test", order = 1, skip = true },
 ]
-pre-push = [
-    { command = "cargo test", order = 1, skip = true },
-]
-post-push = [
-    { command = "cargo test", order = 1, skip = true },
-]
+

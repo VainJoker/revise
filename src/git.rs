@@ -1,9 +1,11 @@
+use add::GitAdd;
 use cmit::GitCommit;
 use diff::GitDiff;
 use repo::GitRepository;
 
 use crate::error::ReviseResult;
 
+pub mod add;
 pub mod cmit;
 pub mod diff;
 pub mod repo;
@@ -24,17 +26,21 @@ impl GitUtils {
             repo: Self::git_repo().expect("Failed to get repository"),
         }
     }
-    pub fn diff(&self, exclude_files: &Vec<String>) -> ReviseResult<String> {
+    pub fn diff(&self, exclude_files: &[String]) -> ReviseResult<String> {
         Self::git_diff(&self.repo, exclude_files)
     }
     pub fn commit(&self, message: &str) -> ReviseResult<()> {
         Ok(Self::git_cmit(&self.repo, message)?)
+    }
+    pub fn add(&self, paths: &[String]) -> ReviseResult<()> {
+        Self::git_add(&self.repo, paths)
     }
 }
 
 impl GitDiff for GitUtils {}
 impl GitCommit for GitUtils {}
 impl GitRepository for GitUtils {}
+impl GitAdd for GitUtils {}
 
 #[cfg(test)]
 mod tests {

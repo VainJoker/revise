@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 
 ## [unreleased]
 
+### ✨ Features
+
+- *(revise)* Implement exclusion of specified files from diff generation    - ([2f47764](https://github.com/vainjoker/revise/commit/2f47764af6bb296e5caa4539fb72cede14532bad))
+- *(revise)* Add hooks to run commands - ([d7e9e24](https://github.com/vainjoker/revise/commit/d7e9e24d99867aa77905f9b98b11636d1fb9ad4d))
+
 ### 📚 Documentation
 
 - *(docs)* Add support for commit start with emoji - ([92ca1f7](https://github.com/vainjoker/revise/commit/92ca1f7e7ad577c7b43baba4aa952d6fa5fbeddd))

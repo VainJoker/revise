@@ -1,7 +1,5 @@
 use std::fmt::Formatter;
 
-use anyhow::anyhow;
-
 #[derive(Clone, Default, Debug)]
 pub enum Status {
     #[default]
@@ -29,7 +27,7 @@ impl std::str::FromStr for Status {
             "y" | "yes" | "" => Ok(Self::Submit),
             "n" | "no" => Ok(Self::Abort),
             "e" | "edit" => Ok(Self::Edit),
-            &_ => Err(anyhow!("input error")),
+            &_ => Err(anyhow::anyhow!("input error")),
         }
     }
 }

@@ -32,14 +32,3 @@ pub trait GitCommit {
         Ok(())
     }
 }
-
-// #[cfg(test)]
-// mod tests {
-//     use super::*;
-//
-//     #[test]
-//     fn test_git_commit() {
-//         git_commit(&git2::Repository::open(".").unwrap(), "Test").unwrap();
-//     }
-//
-// }

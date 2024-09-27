@@ -28,12 +28,9 @@ pub struct Template {
 }
 
 impl Template {
-    pub async fn run(
-        &mut self,
-        cmd: &Option<ReviseCommands>,
-    ) -> ReviseResult<String> {
-        if let Some(a) = cmd {
-            self.run_action(&a.ai).await?;
+    pub async fn run(&mut self, cmd: &ReviseCommands) -> ReviseResult<String> {
+        if cmd.ai.is_some() {
+            self.run_action(cmd).await?;
         } else {
             self.run_default()?;
         }
@@ -52,17 +49,20 @@ impl Template {
         Ok(())
     }
 
-    pub async fn run_action(&mut self, cmd: &AICommand) -> ReviseResult<()> {
+    pub async fn run_action(
+        &mut self,
+        cmd: &ReviseCommands,
+    ) -> ReviseResult<()> {
         let cfg = config::get_config();
         let Some(key) = cfg.api_key.get("gemini_key") else {
             return Err(anyhow::anyhow!("API key not found"));
         };
 
         let gemini = Gemini::new(key);
-        let exclude_files = cfg.exclude_files.clone();
-        let mut s = match cmd {
-            AICommand::Translate(s) => {s.to_string()},
-            AICommand::Generate => GitUtils::new().diff(&exclude_files)?,
+
+        let mut s = match cmd.ai.clone().unwrap() {
+            AICommand::Translate(s) => s,
+            AICommand::Generate => GitUtils::new().diff(&cmd.excludes)?,
         };
         if s.is_empty() {
             let mut translate = commit_translate::Part::new();
@@ -76,14 +76,11 @@ impl Template {
         }
         let handle =
             task::spawn(async move { gemini.generate_response(&s).await });
-
         self.commit_type.inquire()?;
         self.commit_scope.inquire()?;
         self.commit_breaking.inquire()?;
         self.commit_issue.inquire()?;
-
         let res = handle.await??;
-
         let mut ai = commit_ai::Part::new(res.keys().cloned().collect());
         ai.inquire()?;
         let ai_ans = res.get(&ai.ans.clone().unwrap()).unwrap();
