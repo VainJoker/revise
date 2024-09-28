@@ -2,7 +2,7 @@
 
 All notable changes to this project will be documented in this file.
 
-## [unreleased]
+## [0.1.7](https://github.com/vainjoker/revise/compare/v0.1.4..v0.1.7) - 2024-09-28
 
 ### ✨ Features
 
@@ -56,6 +56,7 @@ All notable changes to this project will be documented in this file.
 
 ### 🪶 Miscellaneous Tasks
 
+- Release version 0.1.7 - ([ee85dd0](https://github.com/vainjoker/revise/commit/ee85dd034a2fc03031032ff8b98854b7dc010e52))
 - Release version 0.1.6    - ([629deaf](https://github.com/vainjoker/revise/commit/629deaf1aacaa5cd99424e6ea57161ae7b387705))
 - Remove cargo deny check in github action    - ([18cb5fc](https://github.com/vainjoker/revise/commit/18cb5fc4ca1e65eae1d5429e659bfcf9fcec1e2d))
 - Bump: Version 0.1.4 to 0.1.5 - ([01c783f](https://github.com/vainjoker/revise/commit/01c783f4eec918fee30b0c05a1f7f9747458ec76))
