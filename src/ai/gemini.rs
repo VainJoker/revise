@@ -357,6 +357,7 @@ mod tests {
 
     #[ignore]
     #[tokio::test]
+    #[allow(clippy::needless_return)]
     async fn test_gemini_call() {
         dotenvy::dotenv().ok();
         let key = std::env::var("REVISE_GEMINI_KEY").unwrap();

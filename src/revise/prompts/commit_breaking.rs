@@ -1,6 +1,6 @@
 use inquire::{
-    ui::{Color, RenderConfig, Styled},
     Editor,
+    ui::{Color, RenderConfig, Styled},
 };
 
 use super::Inquire;

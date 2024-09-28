@@ -102,10 +102,10 @@ mod tests {
         struct GItDiffImpl;
         impl GitDiff for GItDiffImpl {}
 
-        let _ = GItDiffImpl::git_diff(
-            &git2::Repository::open(".").unwrap(),
-            &["README.md".to_string()],
-        )
-        .unwrap();
+        let _ =
+            GItDiffImpl::git_diff(&git2::Repository::open(".").unwrap(), &[
+                "README.md".to_string(),
+            ])
+            .unwrap();
     }
 }

@@ -2,6 +2,7 @@ use git_revise::{cli, config, revise::Revise};
 use human_panic::setup_panic;
 
 #[tokio::main]
+#[allow(clippy::needless_return)]
 async fn main() {
     setup_panic!();
     config::initialize_config().unwrap_or_else(|e| {
@@ -10,12 +11,10 @@ async fn main() {
     });
     let cmd = cli::parse_command();
     match Revise::default().run(cmd).await {
-        Ok(()) => {
-            std::process::exit(exitcode::OK);
-        }
+        Ok(()) => std::process::exit(exitcode::OK),
         Err(e) => {
             eprintln!("Error occurred when trying to commit, err: {e}");
-            std::process::exit(exitcode::DATAERR);
+            std::process::exit(exitcode::DATAERR)
         }
     }
 }

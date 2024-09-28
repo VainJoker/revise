@@ -9,12 +9,12 @@ use super::prompts::{
     commit_scope, commit_subject, commit_translate, commit_type,
 };
 use crate::{
-    ai::{gemini::Gemini, AI},
+    AICommand, ReviseCommands,
+    ai::{AI, gemini::Gemini},
     config,
     error::ReviseResult,
     git::GitUtils,
     revise::prompts::Inquire,
-    AICommand, ReviseCommands,
 };
 
 #[derive(Debug, Default, Clone)]

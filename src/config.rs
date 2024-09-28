@@ -6,7 +6,7 @@ use serde::Deserialize;
 
 use crate::{
     error::ReviseResult,
-    git::{repo::GitRepository, GitUtils},
+    git::{GitUtils, repo::GitRepository},
     hook::HookType,
 };
 
