@@ -14,6 +14,10 @@ All notable changes to this project will be documented in this file.
 
 - *(docs)* Add support for commit start with emoji - ([92ca1f7](https://github.com/vainjoker/revise/commit/92ca1f7e7ad577c7b43baba4aa952d6fa5fbeddd))
 
+### ⚡️ Performance
+
+- *(git)* Improve: Transition from `git2` to shell-based Git commands for enhanced performance - ([80260fc](https://github.com/vainjoker/revise/commit/80260fcb463772d8f874768ebe79a2b05a81c46c))
+
 ### 🪶 Miscellaneous Tasks
 
 - Upgrade realme and rustfmt configurations    - ([fff7a7e](https://github.com/vainjoker/revise/commit/fff7a7ef703ee219f34a6bab84406fa455abcd7b))
