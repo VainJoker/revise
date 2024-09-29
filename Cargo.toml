@@ -1,6 +1,6 @@
 [package]
 name = "git-revise"
-version = "0.1.7"
+version = "0.1.8"
 edition = "2021"
 authors = ["Jasper Zhang <vainjoker@tuta.io>"]
 description = "A command line utility for better commit"

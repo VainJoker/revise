@@ -81,12 +81,10 @@ emojis = [
     { key= "perf", value="⚡️"},
     { key= "test", value="✅"},
     { key= "build", value="📦️"},
-    { key= "ci", value="⚙️"},
+    { key= "ci", value="🪶"},
     { key= "chore", value="🔨"},
     { key= "revert", value="◀️"}
 ]
-
-align = "hidden" # left right hidden
 
 api_key.gemini_key = "{{env}}"
 
@@ -96,6 +94,20 @@ scopes = [
     "test",
     "docs"
 ]
+
+exclude_files = [
+    "CHANGELOG.md"
+]
+
+template = """
+{{commit_icon}} {{ commit_type }}{% if commit_scope %}({{commit_scope}}){% endif %}{% if commit_breaking %}{{commit_breaking_symbol}}{% endif %}: {{ commit_subject }}{% if commit_issue %}({{commit_issue}}){% endif %}   
+{% if commit_body %}\n{{ commit_body }}{% endif %}
+{% if commit_breaking %}\n{{ commit_breaking }}{% endif %}
+"""
+
+[translation]
+from = "中文"
+to = "English"
 
 [auto]
 [auto.git]
@@ -107,6 +119,18 @@ footer = false
 content = false
 footer = false
 
+[hooks]
+pre-add = [
+    { command = "cargo clippy --fix --allow-dirty --allow-staged", order = 1 },
+    { command = "cargo make", order = 2 },
+]
+post-add = [
+    { command = "git status", order = 1 },
+]
+pre-commit = [
+]
+post-commit = [
+]
 
 ```
 
@@ -144,7 +168,7 @@ git-revise
 <!-- ROADMAP -->
 ## Roadmap
 
-- [ ] Auto add and show diff
+- [x] Auto add and show diff
 - [x] AI integrated
     - [x] Auto translate to english
     - [x] Auto generate with git diff
