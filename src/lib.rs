@@ -7,5 +7,5 @@ pub mod hook;
 pub mod revise;
 
 pub use cli::{AICommand, ReviseCommands};
-pub use config::{ReviseConfig, get_config};
+pub use config::{get_config, ReviseConfig};
 pub use error::ReviseResult;

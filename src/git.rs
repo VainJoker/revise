@@ -3,16 +3,24 @@ use cmit::GitCommit;
 use diff::GitDiff;
 use repo::GitRepository;
 
-use crate::error::ReviseResult;
+use crate::ReviseResult;
 
 pub mod add;
 pub mod cmit;
 pub mod diff;
 pub mod repo;
 
-pub struct GitUtils {
-    repo: git2::Repository,
-}
+pub struct GitUtils;
+
+// pub struct GitUtils {
+//     repo: git2::Repository,
+// }
+
+// impl Default for GitUtils {
+//     fn default() -> Self {
+//         Self::new()
+//     }
+// }
 
 impl Default for GitUtils {
     fn default() -> Self {
@@ -21,19 +29,17 @@ impl Default for GitUtils {
 }
 
 impl GitUtils {
-    pub fn new() -> Self {
-        Self {
-            repo: Self::git_repo().expect("Failed to get repository"),
-        }
+    pub const fn new() -> Self {
+        Self {}
     }
     pub fn diff(&self, exclude_files: &[String]) -> ReviseResult<String> {
-        Self::git_diff(&self.repo, exclude_files)
+        Self::git_diff(exclude_files)
     }
     pub fn commit(&self, message: &str) -> ReviseResult<()> {
-        Ok(Self::git_cmit(&self.repo, message)?)
+        Self::git_cmit(message)
     }
     pub fn add(&self, paths: &[String]) -> ReviseResult<()> {
-        Self::git_add(&self.repo, paths)
+        Self::git_add(paths)
     }
 }
 
@@ -41,13 +47,3 @@ impl GitDiff for GitUtils {}
 impl GitCommit for GitUtils {}
 impl GitRepository for GitUtils {}
 impl GitAdd for GitUtils {}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn test_git_repository() {
-        GitUtils::git_repo().unwrap();
-    }
-}

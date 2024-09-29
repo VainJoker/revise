@@ -6,7 +6,7 @@ use serde::Deserialize;
 
 use crate::{
     error::ReviseResult,
-    git::{GitUtils, repo::GitRepository},
+    git::{repo::GitRepository, GitUtils},
     hook::HookType,
 };
 
@@ -144,9 +144,7 @@ impl ReviseConfig {
         let mut config_paths = Vec::new();
 
         if let Ok(repo) = GitUtils::git_repo() {
-            if let Some(repo_root) = repo.path().parent() {
-                config_paths.push(repo_root.join("revise.toml"));
-            }
+            config_paths.push(PathBuf::from(repo).join("revise.toml"));
         }
 
         if let Some(config_dir) = dirs::config_local_dir() {

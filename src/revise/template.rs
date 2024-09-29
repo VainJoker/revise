@@ -9,12 +9,12 @@ use super::prompts::{
     commit_scope, commit_subject, commit_translate, commit_type,
 };
 use crate::{
-    AICommand, ReviseCommands,
-    ai::{AI, gemini::Gemini},
+    ai::{gemini::Gemini, AI},
     config,
     error::ReviseResult,
     git::GitUtils,
     revise::prompts::Inquire,
+    AICommand, ReviseCommands,
 };
 
 #[derive(Debug, Default, Clone)]
@@ -64,6 +64,7 @@ impl Template {
             AICommand::Translate(s) => s,
             AICommand::Generate => GitUtils::new().diff(&cmd.excludes)?,
         };
+        // Fix: If the diff is empty, not directly ask user to input
         if s.is_empty() {
             let mut translate = commit_translate::Part::new();
             translate.inquire()?;
