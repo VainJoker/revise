@@ -57,7 +57,8 @@
 To use git-revise, you have the option to create a toml file called *`revise.toml`* in the project directory or your local config directory. This file allows you to customize the configuration settings for git-revise. However, it's important to note that you can still use git-revise without creating these files, as it will use the default configuration.
 
 For example, you can configure git-revise by creating a revise.toml file with the following content:
-```
+
+```toml
 types = [
     { key= "feat", value= "A new feature"},
     { key= "fix", value= "A bug fix"},
@@ -89,7 +90,6 @@ emojis = [
 api_key.gemini_key = "{{env}}"
 
 scopes = [
-    "revise",
     "config",
     "test",
     "docs"
@@ -164,15 +164,37 @@ or
 git-revise
 ```
 
+To use the AI feature, you need to set the `api_key.gemini_key` in the revise.toml file. And then run the command
+
+```sh
+git revise --g 
+```
+
+It will use Gemini API to generate the commit message with the git diff content for now. (It will fail if you don't have the key set or the diff content is too large, but I did not meet the limit yet) Other AI models will be supported in the future.
+
+Also, git revise supports translate the commit message to english or chinese, you can set the `translation.from` and `translation.to` in the revise.toml file. And then run the command
+
+```sh
+git revise --t
+```
+
+Git revise support hook feature, you can set the `hooks` in the revise.toml file. For now it only support `pre-add`, `post-add`, `pre-commit` and `post-commit` hooks. You can run command like `git status` or `cargo make` before or after the commit. To use git revise add the hook, you can run the following command
+
+```sh
+git revise --a [files]
+```
+
+To specify `[files]`, you can use the same syntax as `git add [files]`.
+
+To get more help, you can run the following command
+```sh
+git revise --h
+```
+
+Now enjoy it! If you encounter any issues or have any feature requests, please open an issue.
 
 <!-- ROADMAP -->
 ## Roadmap
-
-- [x] Auto add and show diff
-- [x] AI integrated
-    - [x] Auto translate to english
-    - [x] Auto generate with git diff
-- [ ] More configurable
 
 See the [open issues](https://github.com/vainjoker/revise/issues) for a full list of proposed features (and known issues).
 

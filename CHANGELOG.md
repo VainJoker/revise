@@ -2,7 +2,7 @@
 
 All notable changes to this project will be documented in this file.
 
-## [unreleased]
+## [0.1.8](https://github.com/vainjoker/revise/compare/v0.1.6..v0.1.8) - 2024-09-29
 
 ### ✨ Features
 
@@ -20,6 +20,7 @@ All notable changes to this project will be documented in this file.
 
 ### 🪶 Miscellaneous Tasks
 
+- Bump version to 0.1.8 - ([ba0fe0f](https://github.com/vainjoker/revise/commit/ba0fe0f31a1127f5578258991604046b51b4822c))
 - Update tokio dependency - ([876b6d3](https://github.com/vainjoker/revise/commit/876b6d360da6c774729e1e272cc26c1a5803d109))
 - Upgrade realme and rustfmt configurations    - ([fff7a7e](https://github.com/vainjoker/revise/commit/fff7a7ef703ee219f34a6bab84406fa455abcd7b))
 - Release version 0.1.7 - ([ee85dd0](https://github.com/vainjoker/revise/commit/ee85dd034a2fc03031032ff8b98854b7dc010e52))

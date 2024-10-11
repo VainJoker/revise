@@ -1,6 +1,6 @@
 use inquire::{
-    validator::{ErrorMessage, Validation},
     Text,
+    validator::{ErrorMessage, Validation},
 };
 
 use super::Inquire;

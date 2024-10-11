@@ -6,7 +6,7 @@ use serde::Deserialize;
 
 use crate::{
     error::ReviseResult,
-    git::{repo::GitRepository, GitUtils},
+    git::{GitUtils, repo::GitRepository},
     hook::HookType,
 };
 
@@ -163,12 +163,8 @@ impl ReviseConfig {
         let config = match config_path {
             Some(path) => {
                 return Realme::builder()
-                    .load(Adaptor::new(Box::new(EnvSource::<EnvParser>::new(
-                        "REVISE_",
-                    ))))
-                    .load(Adaptor::new(Box::new(
-                        FileSource::<TomlParser>::new(path),
-                    )))
+                    .load(Adaptor::new(EnvSource::<EnvParser>::new("REVISE_")))
+                    .load(Adaptor::new(FileSource::<TomlParser>::new(path)))
                     .build()?
                     .try_deserialize()
                     .map_err(|e| anyhow::anyhow!(e.to_string()));
